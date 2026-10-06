@@ -1,0 +1,200 @@
+# =============================================================================
+# Configuration de la VM du cours (lancé par Vagrant : provisioner ansible_local).
+# Installe ce que les étapes 1 et 2 du Lab 0 demandent sur un poste Linux :
+#   Docker Engine + Compose, kubectl, helm, k9s, kind, uv (+ git, make, curl, jq).
+# Idempotent : relancer « vagrant provision » ne refait que ce qui manque.
+# Versions : KIND_VERSION est lu dans infra/versions.env (source unique) ; les outils
+# que versions.env ne fixe pas sont figés ci-dessous.
+# =============================================================================
+- name: VM du cours MLOps
+  hosts: all
+  become: true
+  vars:
+    lab_user: vagrant
+    kubectl_version: "v1.37.1"   # même version mineure que les nœuds kind (v1.37)
+    helm_version: "v4.3.0"
+    k9s_version: "v0.51.0"
+    uv_version: "0.12.23"
+    relayed_ports: [5000, 8888, 8333]
+    # Adresse de la VM sur le réseau NAT de VirtualBox (10.0.2.15 par défaut)
+    vm_nat_ip: "{{ ansible_default_ipv4.address | default('10.0.2.15') }}"
+    arch: "{{ 'arm64' if ansible_architecture in ['aarch64', 'arm64'] else 'amd64' }}"
+
+  pre_tasks:
+    - name: Lire infra/versions.env (dossier partagé par Vagrant)
+      ansible.builtin.slurp:
+        src: /opt/mlops-infra/versions.env
+      register: versions_env
+
+    - name: Version de kind (KIND_VERSION)
+      ansible.builtin.set_fact:
+        kind_version: >-
+          {{ (versions_env.content | b64decode).replace('\r', '')
+             | regex_search('^KIND_VERSION=(\S+)', '\1', multiline=True) | first }}
+
+  tasks:
+    # --- Disque : la box bento a un disque de 64 Go, utiliser tout l'espace LVM ---
+    - name: Étendre le volume racine à tout le disque (si de l'espace LVM est libre)
+      ansible.builtin.shell: |
+        set -e
+        if vgs ubuntu-vg >/dev/null 2>&1; then
+          free=$(vgs --noheadings --nosuffix --units g -o vg_free ubuntu-vg | tr -d ' ' | cut -d. -f1)
+          if [ "${free:-0}" -gt 1 ]; then
+            lvextend -r -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+            echo extended
+          fi
+        fi
+      register: lvm
+      changed_when: "'extended' in lvm.stdout"
+
+    # --- Étape 1 du Lab 0 : Docker Engine + Docker Compose ----------------------
+    - name: Paquets système (Docker et Compose depuis les dépôts Ubuntu)
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - git
+          - jq
+          - make
+          - unzip
+          - socat
+          - python3
+          - docker.io           # Docker Engine (29.x dans Ubuntu 24.04 en octobre 2026)
+          - docker-compose-v2   # plugin « docker compose »
+          - docker-buildx
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Docker démarré au boot
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: "{{ lab_user }} dans le groupe docker (docker sans sudo)"
+      ansible.builtin.user:
+        name: "{{ lab_user }}"
+        groups: docker
+        append: true
+
+    # Recommandation de la doc kind (« Pod errors due to too many open files »)
+    - name: Limites inotify relevées (cluster kind à 3 nœuds)
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-kind.conf
+        mode: "0644"
+        content: |
+          fs.inotify.max_user_watches = 524288
+          fs.inotify.max_user_instances = 512
+      register: sysctl_kind
+
+    - name: Appliquer les limites inotify
+      ansible.builtin.command: sysctl --system
+      when: sysctl_kind.changed
+
+    # --- Étape 2 du Lab 0 : kubectl, helm, k9s, kind ------------------------------
+    - name: kubectl {{ kubectl_version }}
+      ansible.builtin.get_url:
+        url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/{{ arch }}/kubectl"
+        dest: /usr/local/bin/kubectl
+        mode: "0755"
+
+    - name: helm {{ helm_version }}
+      ansible.builtin.unarchive:
+        src: "https://get.helm.sh/helm-{{ helm_version }}-linux-{{ arch }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        extra_opts: ["--strip-components=1", "linux-{{ arch }}/helm"]
+        owner: root
+        group: root
+        creates: /usr/local/bin/helm
+
+    - name: k9s {{ k9s_version }}
+      ansible.builtin.unarchive:
+        src: "https://github.com/derailed/k9s/releases/download/{{ k9s_version }}/k9s_Linux_{{ arch }}.tar.gz"
+        dest: /usr/local/bin
+        remote_src: true
+        extra_opts: ["k9s"]
+        owner: root
+        group: root
+        creates: /usr/local/bin/k9s
+
+    - name: kind {{ kind_version }} (versions.env)
+      ansible.builtin.get_url:
+        url: "https://github.com/kubernetes-sigs/kind/releases/download/{{ kind_version }}/kind-linux-{{ arch }}"
+        dest: /usr/local/bin/kind
+        mode: "0755"
+
+    # --- Étape 6.1 du Lab 0 : uv (Python 3.12 et uv sync restent à faire par l'étudiant) ---
+    - name: uv {{ uv_version }}
+      ansible.builtin.shell: |
+        set -o pipefail
+        curl -LsSf https://astral.sh/uv/{{ uv_version }}/install.sh | sh
+      become_user: "{{ lab_user }}"
+      args:
+        executable: /bin/bash
+        creates: "/home/{{ lab_user }}/.local/bin/uv"
+
+    # --- Accès depuis le navigateur Windows -----------------------------------------
+    # Les port-forwards kubectl (make pf…) écoutent sur 127.0.0.1 dans la VM. Un relais socat
+    # par port les republie sur l'interface NAT de la VM, que Vagrant redirige vers le
+    # 127.0.0.1 de Windows. Rien n'est exposé au réseau de la salle.
+    - name: Relais socat (unité systemd modèle)
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/mlops-relay@.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Relais navigateur Windows -> 127.0.0.1:%i (VM du cours MLOps)
+          After=network-online.target
+          Wants=network-online.target
+
+          [Service]
+          ExecStart=/usr/bin/socat TCP-LISTEN:%i,bind={{ vm_nat_ip }},fork,reuseaddr TCP:127.0.0.1:%i
+          Restart=always
+          RestartSec=2
+
+          [Install]
+          WantedBy=multi-user.target
+      register: relay_unit
+
+    - name: Recharger systemd
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+      when: relay_unit.changed
+
+    - name: Un relais par port du cours
+      ansible.builtin.systemd_service:
+        name: "mlops-relay@{{ item }}"
+        state: "{{ 'restarted' if relay_unit.changed else 'started' }}"
+        enabled: true
+      loop: "{{ relayed_ports }}"
+
+    # --- Shell de l'étudiant -----------------------------------------------------------
+    - name: Environnement shell du cours
+      ansible.builtin.blockinfile:
+        path: "/home/{{ lab_user }}/.bashrc"
+        marker: "# {mark} COURS MLOPS (VM Vagrant)"
+        block: |
+          export PATH="$HOME/.local/bin:$PATH"
+          export DO_NOT_TRACK=true
+          export MLFLOW_DISABLE_TELEMETRY=true
+          alias k=kubectl
+          [ -d "$HOME/mlops-cours-2026" ] && cd "$HOME/mlops-cours-2026"
+
+    - name: Versions installées
+      ansible.builtin.shell: |
+        set -e
+        docker --version
+        docker compose version
+        kubectl version --client | head -1
+        helm version --short
+        echo "k9s $(k9s version -s | awk '/Version/{print $2}')"
+        kind version
+        /home/{{ lab_user }}/.local/bin/uv --version
+      register: versions
+      changed_when: false
+
+    - name: Afficher les versions
+      ansible.builtin.debug:
+        var: versions.stdout_lines

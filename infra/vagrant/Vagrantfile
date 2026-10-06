@@ -1,0 +1,73 @@
+# -*- mode: ruby -*-
+# =============================================================================
+# VM Linux du cours MLOps pour les postes Windows (ou tout poste sans Docker natif).
+#
+#   cd infra/vagrant
+#   vagrant up        # cree + configure la VM (15-25 min la premiere fois)
+#   vagrant ssh       # shell Linux : tout le reste du cours se fait ici
+#
+# La VM remplace "Docker Desktop + WSL2" : Docker, kind, kubectl, helm, k9s et uv
+# y sont installes par Ansible (playbook.yml), aux versions de infra/versions.env.
+# Le repo du binome est clone DANS la VM (~/mlops-cours-2026), pas sur Windows.
+#
+# Variables (PowerShell : $env:VM_MEMORY=12288; vagrant up) :
+#   VM_MEMORY  RAM en Mo   (defaut 8192  ; 12288 a partir du Lab 2, poste de 16 Go)
+#   VM_CPUS    vCPU        (defaut 4)
+#   VAGRANT_BOX            (defaut bento/ubuntu-24.04, PC x86_64)
+# =============================================================================
+BOX    = ENV.fetch("VAGRANT_BOX", "bento/ubuntu-24.04")
+MEMORY = Integer(ENV.fetch("VM_MEMORY", "8192"))
+CPUS   = Integer(ENV.fetch("VM_CPUS", "4"))
+
+# Ports des services du cours, ouverts dans le navigateur Windows (http://localhost:PORT).
+# Dans la VM, "make pf" (et les port-forwards des labs suivants) ecoutent sur 127.0.0.1 ;
+# le playbook installe un relais (socat) pour ces ports : voir mlops-relay@.service.
+RELAYED_PORTS = {
+  5000 => "MLflow (Lab 0+)",
+  8888 => "Filer SeaweedFS (Lab 0+)",
+  8333 => "API S3 SeaweedFS (Lab 0+)",
+  8080 => "UI Kubeflow Pipelines (Lab 2)",
+  8443 => "Argo CD (Lab 6)",
+  3000 => "Grafana (Lab 7)",
+  9090 => "Prometheus (Lab 7)",
+  9093 => "Alertmanager (Lab 7)",
+}
+
+Vagrant.configure("2") do |config|
+  config.vm.box      = BOX
+  config.vm.hostname = "mlops-vm"
+  config.vm.boot_timeout = 600
+
+  RELAYED_PORTS.each_key do |port|
+    config.vm.network "forwarded_port", guest: port, host: port,
+                      host_ip: "127.0.0.1", auto_correct: true
+  end
+  # Passerelle Kourier / KServe (Lab 5) : publiee directement par kind (hostPort 30080)
+  config.vm.network "forwarded_port", guest: 30080, host: 30080,
+                    host_ip: "127.0.0.1", auto_correct: true
+
+  # Dossier infra/ du repo, en lecture seule : le playbook y lit versions.env
+  config.vm.synced_folder "..", "/opt/mlops-infra", mount_options: ["ro"]
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name   = "mlops-vm"
+    vb.memory = MEMORY
+    vb.cpus   = CPUS
+  end
+
+  # 1. Ansible, depuis les paquets Ubuntu (rien a installer sur Windows)
+  config.vm.provision "install-ansible", type: "shell", inline: <<~SHELL
+    if ! command -v ansible-playbook >/dev/null; then
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update -q && apt-get install -y -q ansible
+    fi
+  SHELL
+
+  # 2. Configuration de la VM (idempotente : "vagrant provision" pour la rejouer)
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.install            = false
+    ansible.compatibility_mode = "2.0"
+    ansible.playbook           = "playbook.yml"
+    ansible.extra_vars         = { relayed_ports: RELAYED_PORTS.keys }
+  end
+end
