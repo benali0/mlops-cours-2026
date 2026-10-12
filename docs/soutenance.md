@@ -1,13 +1,13 @@
 # Soutenance — déroulé et checklist de préparation
 
-## Déroulé (25 minutes par binôme)
+## Déroulé (25 minutes par binôme, devant le poster)
 
 | Temps | Durée | Qui | Contenu | Barème concerné |
 |---|---|---|---|---|
-| 0:00 | 5 min | Binôme | **Démo du socle de bout en bout** : une modification (code, données ou paramètre) traverse la chaîne jusqu'au modèle servi, puis on le voit dans le monitoring | Socle (12, commun) |
-| 0:05 | 5 min | Membre 1 | **Extension 1** : objectif, démonstration en direct, tests, ADR | Extension (12, individuel) |
-| 0:10 | 5 min | Membre 2 | **Extension 2** : même format | Extension (12, individuel) |
-| 0:15 | 4 min | Membre 1 | **Défi en direct** : un incident tiré au sort est provoqué sur le socle ; vous diagnostiquez et corrigez à voix haute | Défi et questions (10, individuel) |
+| 0:00 | 5 min | Binôme | **Poster et projet déployé** : le problème, l'architecture, les résultats ; le jury scanne le QR code et envoie lui-même une prédiction | Socle (12) et livrables (6) |
+| 0:05 | 5 min | Membre 1 | **Extension 1** : problème traité, démonstration en direct, tests, compromis (ADR) | Extension (12, individuel) |
+| 0:10 | 4 min | Membre 1 | **Défi en direct sur son propre cluster** : un incident tiré au sort est provoqué sur le socle ; diagnostic et correction à voix haute | Défi et questions (10, individuel) |
+| 0:14 | 5 min | Membre 2 | **Extension 2** : même format | Extension (12, individuel) |
 | 0:19 | 4 min | Membre 2 | **Défi en direct** : un autre incident, même format | Défi et questions (10, individuel) |
 | 0:23 | 2 min | Binôme | **Questions** du jury (souvent sur une ADR, le rapport ou l'historique Git) | Défi et questions (10, individuel) |
 
@@ -21,13 +21,18 @@ Règles du défi :
   incident non résolu en 4 minutes avec un diagnostic juste vaut plus qu'une correction au
   hasard qui tombe en marche.
 
-**Plan B** (cluster en panne le jour J) : la vidéo de démo de 3 minutes remplace la démo du
-socle ; le défi se fait sur le cluster de l'enseignant, avec le même repo, reconstruit par
-`dvc repro` (le remote DVC de votre cluster n'est pas accessible depuis un autre poste).
+**Plans B** :
+
+- **Le projet déployé ne répond pas** : la démo se fait en local (l'image de l'API lancée avec
+  `docker run` comme au Lab 4, et le modèle servi par KServe sur votre cluster) ; le critère
+  « déploiement cloud » de la grille en tient compte.
+- **Votre cluster ne démarre pas** : le défi se fait sur le cluster de l'enseignant, avec votre
+  repo reconstruit par `dvc repro` (le remote DVC de votre cluster n'est pas joignable d'un
+  autre poste).
 
 ## Checklist de préparation
 
-### Dès la S8 (déclaration des extensions)
+### Dès la S5 (déclaration des extensions)
 
 | ☐ | Action |
 |---|---|
@@ -41,14 +46,15 @@ socle ; le défi se fait sur le cluster de l'enseignant, avec le même repo, rec
 |---|---|
 | ☐ | Les deux PR `ext/*` sont fusionnées dans `main` après relecture |
 | ☐ | `make check-m10` lancé sur les **deux** postes ; écarts corrigés ou expliqués dans le rapport |
-| ☐ | Répétition chronométrée complète (25 min) avec un autre binôme comme jury |
+| ☐ | Répétition chronométrée complète (25 min) devant le poster (imprimé ou projeté), avec un autre binôme comme jury |
 | ☐ | Reproductibilité testée sur une machine (ou un compte) qui n'a jamais vu le projet : `git clone`, `make up`, `uv sync`, `dvc repro` puis `dvc push`, pipeline (`dvc pull` ne marche que sur le cluster qui a fait le `dvc push`) |
 
 ### J-2 (48 h avant) — tag `final`
 
 | ☐ | Action |
 |---|---|
-| ☐ | `docs/rapport.pdf` (10 pages max), slides (`docs/slides.pdf`), lien de la vidéo de démo (3 min) dans le README |
+| ☐ | Projet déployé : l'URL de la section « Projet en ligne » du README répond (`/health`, `/docs`, une prédiction) |
+| ☐ | `docs/rapport.pdf` (10 pages max, liens cliquables), `docs/poster.pdf` (A1 portrait), QR codes testés sur deux téléphones hors du Wi-Fi de l'école |
 | ☐ | `docs/journal.md` à jour, au moins 3 ADR acceptés, dataset card et model card relues |
 | ☐ | `git tag final && git push origin final` (vérifier sur GitHub que le tag est visible) |
 | ☐ | Plus aucun commit sur `main` après le tag (le jury évalue le tag) |
@@ -61,4 +67,4 @@ socle ; le défi se fait sur le cluster de l'enseignant, avec le même repo, rec
 | ☐ | Terminaux préparés (taille de police lisible, historique propre), onglets ouverts dans l'ordre de la démo |
 | ☐ | Une requête de prédiction prête à copier-coller ; un jeu de données « modifié » prêt pour la démo |
 | ☐ | Les commandes de diagnostic sous la main : `kubectl get/describe/logs/events`, `make check-mX`, MLflow, Grafana, Argo CD |
-| ☐ | Batterie et réseau vérifiés ; vidéo de démo téléchargée en local (plan B) |
+| ☐ | Batterie et réseau vérifiés ; `/health` du projet déployé appelé quelques minutes avant le passage (réveil du service) ; image de l'API disponible en local (plan B) |

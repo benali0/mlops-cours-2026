@@ -2,11 +2,11 @@
 module: 0
 lab: 0
 title: "Setup de l'environnement"
-subtitle: "Préparer la stack MLOps pour les 36 heures à venir"
+subtitle: "Préparer la stack MLOps utilisée dans tout le cours"
 running_title: "Lab 0 — Setup de l'environnement"
-duree: "1 heure en séance (atelier guidé) + environ 1 heure de préparation avant la séance"
+duree: "1 h 10 en séance (atelier guidé) + environ 1 heure de préparation (avant la séance ou en autonomie)"
 format: "Atelier individuel ou en binôme · Linux / macOS / Windows (VM Vagrant)"
-prerequis: "Docker, Kubernetes, Git, Python — niveau cours antérieurs"
+prerequis: "Bases de Python ; aucune expérience de Docker, Vagrant ou Kubernetes requise (voir « Les outils du lab en 15 minutes »)"
 livrable: "Capture de make check-m0 validé à 100 % + première pull request (lab/m0-setup) fusionnée"
 ---
 
@@ -19,7 +19,7 @@ livrable: "Capture de make check-m0 validé à 100 % + première pull request (l
 Tous les labs du cours (modules 1 à 10) reposent sur la même stack : un cluster Kubernetes local,
 un stockage objet S3-compatible, un serveur MLflow partagé, Python avec un environnement
 reproductible, et la chaîne d'outils MLOps de référence (DVC, MLflow, etc.). Le faire correctement
-aujourd'hui évitera 36 heures de friction.
+aujourd'hui évitera des heures de friction pendant tout le cours.
 
 Bonne nouvelle : vous n'écrivez plus l'infrastructure à la main. Le **repo du cours**
 `mlops-cours-2026`, que vous allez forker dès l'étape 3, contient les manifests et scripts
@@ -31,7 +31,7 @@ la déployer et la valider.
 
 > [!NOTE]
 > **Objectifs de ce lab**
-> À la fin de cette heure, vous aurez :
+> À la fin de ce lab, vous aurez :
 >
 > - Un Docker fonctionnel avec le plugin Docker Compose.
 > - Les outils `kubectl`, `helm`, `k9s` et `kind` installés.
@@ -45,6 +45,170 @@ la déployer et la valider.
 > - Une **checklist de validation** entièrement verte, vérifiée par `make check-m0`.
 > - Votre première **pull request** (branche `lab/m0-setup`), la convention de travail de tous
 >   les labs.
+
+## Les outils du lab en 15 minutes (à lire avant de commencer)
+
+Vous n'avez jamais utilisé Docker, Vagrant ou Kubernetes ? C'est normal, et c'est le point de
+départ du cours. Cette section présente chaque outil en quelques lignes : à quoi il sert, une
+image pour le retenir, et les commandes que vous taperez aujourd'hui. Inutile de tout retenir :
+revenez-y pendant le lab dès qu'un nom vous échappe.
+
+![Vue d'ensemble : ce qui tourne sur votre poste pendant le cours](img/00-vue-ensemble.png)
+
+Lisez ce schéma de l'extérieur vers l'intérieur : votre PC contient une machine virtuelle Linux
+(sous Windows), qui fait tourner Docker, qui fait tourner un petit cluster Kubernetes, qui fait
+tourner les deux services du cours : le stockage **SeaweedFS** et le serveur **MLflow**. Vous les
+consultez depuis le navigateur de votre PC.
+
+### Le terminal : là où l'on tape les commandes
+
+Un terminal est une fenêtre où l'on tape des commandes au lieu de cliquer. On tape une ligne, on
+appuie sur Entrée, la commande s'exécute et affiche son résultat. Pendant ce lab, vous utiliserez
+deux terminaux :
+
+| Où ? | Comment l'ouvrir | Ce qu'on y tape |
+|---|---|---|
+| **PowerShell** (Windows) | menu Démarrer > « PowerShell » | les commandes `vagrant` uniquement |
+| **Terminal de la VM** (Linux) | dans PowerShell : `vagrant ssh` ; l'invite devient `vagrant@mlops-vm:~$` | **toutes les autres commandes** du lab |
+| **Navigateur** (Windows) | Edge, Chrome, Firefox… | GitHub, `http://localhost:5000` (MLflow), `http://localhost:8888` (fichiers S3) |
+
+Cinq réflexes : **Tab** complète un nom de fichier ou de commande ; **Ctrl+C** arrête la commande
+en cours ; la flèche **↑** rappelle la commande précédente ; pour coller, **clic droit** (ou
+Ctrl+V dans Windows Terminal) ; `exit` quitte le terminal de la VM. Trois commandes de base :
+`pwd` (où suis-je ?), `ls` (que contient ce dossier ?), `cd dossier` (aller dans un dossier).
+
+### VirtualBox et Vagrant : un ordinateur Linux dans votre ordinateur
+
+**VirtualBox** crée une **machine virtuelle** (VM) : un ordinateur complet, avec son propre
+système (ici Ubuntu Linux), qui tourne dans une fenêtre de votre PC, comme un appartement dans un
+immeuble. Ce que vous faites dans la VM ne touche pas à votre Windows. Les outils du cours sont
+conçus pour Linux : la VM donne à tout le monde le même Linux, quel que soit le PC.
+
+**Vagrant** pilote VirtualBox à partir d'un fichier texte, le `Vagrantfile`
+(`infra/vagrant/Vagrantfile`), qui décrit la VM : système, mémoire, processeurs, ports. Au lieu de
+cliquer dans VirtualBox, on tape une commande, et tous les étudiants obtiennent exactement la même
+VM.
+
+| Commande (PowerShell, dans `infra\vagrant`) | Effet |
+|---|---|
+| `vagrant up` | Crée la VM la première fois (15 à 25 min), la démarre les fois suivantes |
+| `vagrant ssh` | Ouvre un terminal dans la VM |
+| `vagrant suspend` / `vagrant resume` | Met la VM en pause / la reprend, tout reste en marche (à faire entre deux séances) |
+| `vagrant halt` | Éteint la VM |
+| `vagrant destroy -f` | Supprime la VM (et tout ce qu'elle contient) |
+
+![Machine virtuelle et conteneur](img/02-vm-vs-conteneur.png)
+
+### Ansible : la liste d'installation, rejouable
+
+**Ansible** installe et configure des logiciels à partir d'une liste de tâches écrite dans un
+fichier, le *playbook* (`infra/vagrant/playbook.yml`) : « installer Docker », « télécharger
+kind », etc. Vagrant le lance tout seul à la fin de `vagrant up` : vous n'avez rien à taper.
+Ansible est **idempotent** : relancé, il ne refait que ce qui manque, comme une liste de courses où
+l'on ne rachète pas ce qui est déjà dans le placard (`vagrant provision` pour le relancer).
+
+Décrire son environnement dans des fichiers versionnés plutôt que l'installer à la main s'appelle
+l'**Infrastructure as Code** (IaC) : c'est le premier réflexe MLOps.
+
+![Infrastructure as Code : trois commandes, trois couches](img/04-iac.png)
+
+### Docker : des applications emballées avec tout ce qu'il leur faut
+
+Une application a besoin d'un système, de librairies et de réglages précis. **Docker** les
+emballe ensemble dans une **image** (la recette, figée) ; lancer une image crée un **conteneur**
+(le plat, en train de tourner). Un conteneur démarre en quelques secondes, s'exécute isolé des
+autres et se comporte de la même façon sur tous les postes. Les images se téléchargent depuis un
+**registry** (Docker Hub, ghcr.io…) : le cours a aussi le sien, en local, sur `localhost:5001`.
+
+![Docker : image et conteneur](img/01-docker.png)
+
+Commandes du jour : `docker run --rm hello-world` (lance un conteneur de test), `docker ps`
+(conteneurs en marche), `docker images` (images téléchargées). Différence avec une VM : un
+conteneur ne contient pas de système complet, il partage le noyau Linux de la machine. Il est
+donc bien plus léger : on en fait tourner des dizaines là où l'on ferait tourner une seule VM.
+
+### Kubernetes et kind : un chef d'orchestre pour les conteneurs
+
+En production, des centaines de conteneurs tournent sur plusieurs machines. **Kubernetes** les
+orchestre : vous lui **décrivez l'état voulu** dans des fichiers YAML (« je veux un conteneur
+MLflow, toujours en marche, joignable à l'adresse `mlflow.mlflow:5000` ») et il le crée, le
+surveille et le recrée s'il tombe. Le vocabulaire minimal :
+
+- **Cluster** : l'ensemble des machines gérées par Kubernetes. Le nôtre s'appelle `mlops-lab`.
+- **Nœud** (*node*) : une machine du cluster. Le *control-plane* est le cerveau ; les *workers*
+  font tourner les applications.
+- **Pod** : la plus petite unité déployée, qui contient un (parfois plusieurs) conteneurs.
+- **Deployment** : la règle « je veux N pods de ce type, toujours ».
+- **Service** : une adresse stable pour joindre des pods, même s'ils sont recréés.
+- **Namespace** : un « dossier » qui regroupe des objets (`storage`, `mlflow`).
+
+**kind** (*Kubernetes IN Docker*) crée un vrai cluster Kubernetes sur votre poste, dont chaque
+nœud est un conteneur Docker : idéal pour apprendre, il se crée en une commande et se supprime
+sans laisser de trace. Trois outils pour le piloter :
+
+| Outil | Image pour le retenir | Exemple |
+|---|---|---|
+| **kubectl** | la télécommande du cluster | `kubectl get nodes`, `kubectl get pods -A` |
+| **k9s** | le tableau de bord, dans le terminal | `k9s` puis `:pods`, `q` pour quitter |
+| **helm** | le « magasin d'applications » de Kubernetes | utilisé à partir du Lab 2 |
+
+![Kubernetes en une image](img/03-kubernetes.png)
+
+### make : des raccourcis pour les commandes longues
+
+Le fichier `Makefile` du repo regroupe les longues suites de commandes sous des noms courts :
+`make cluster` crée le cluster et le registry, `make storage` déploie SeaweedFS, `make pf` ouvre
+l'accès aux services depuis le poste, `make check-m0` vérifie tout le lab. `make help` les liste
+toutes. Lire le `Makefile` montre exactement ce que chaque raccourci exécute : rien de magique.
+
+### Git et GitHub : l'historique de votre travail
+
+**Git** enregistre l'historique des fichiers d'un projet : chaque **commit** est une photo datée
+et commentée de vos changements. **GitHub** héberge ces projets (**repos**) en ligne. Le circuit
+de chaque lab : vous copiez le repo du cours (**fork**), vous le **clonez** dans la VM, vous
+travaillez sur une **branche** (`lab/m0-setup`), vous **poussez** (`git push`) puis vous ouvrez une
+**pull request** que votre binôme relit avant de la fusionner dans `main`. Pour que GitHub vous
+reconnaisse depuis la VM sans mot de passe, vous créez une **clé SSH** (étape 3).
+
+![Git et GitHub : le circuit d'un lab](img/05-git-github.png)
+
+### Python et uv : le même environnement pour tous
+
+**uv** installe Python 3.12 et les librairies du cours (MLflow, DVC, scikit-learn…) aux versions
+exactes listées dans `uv.lock`, dans un dossier isolé du projet, `.venv` (l'*environnement
+virtuel*). Résultat : tout le monde a les mêmes versions, et rien ne se mélange avec d'autres
+projets. Une commande suffit : `uv sync`.
+
+### Les services du Lab 0 : S3, MLflow et DVC
+
+- **Stockage S3 (SeaweedFS)** : un espace de stockage de fichiers organisé en **buckets**
+  (des grands dossiers), utilisé par toute l'industrie (le standard vient d'Amazon S3).
+  SeaweedFS en fournit un, gratuit, dans votre cluster.
+- **MLflow** : le cahier de laboratoire des expériences de machine learning. Chaque entraînement
+  (*run*) y enregistre ses paramètres, ses scores et ses fichiers (*artefacts*), pour comparer et
+  retrouver n'importe quel modèle.
+- **DVC** : « Git pour les données ». Les jeux de données sont trop gros pour Git : DVC garde dans
+  Git un petit fichier pointeur et envoie les données dans S3.
+- **Port-forward** (`make pf`) : un tunnel qui rend un service du cluster accessible sur
+  `localhost`, comme si le service tournait sur votre poste.
+
+![Ce que vérifient les smoke tests du Lab 0](img/06-lab0-flux.png)
+
+### Mini-glossaire
+
+| Terme | En une phrase |
+|---|---|
+| `localhost` | « Ce poste-ci » : l'adresse de la machine sur laquelle on travaille |
+| Port | Numéro de « porte » d'un service sur une machine (MLflow : 5000, S3 : 8333) |
+| VM | Ordinateur virtuel complet, avec son propre système |
+| Image / conteneur | Application emballée (la recette) / instance en marche (le plat) |
+| Cluster / nœud | Ensemble de machines gérées par Kubernetes / une de ces machines |
+| Pod | Unité de déploiement de Kubernetes, contient un ou plusieurs conteneurs |
+| Bucket | « Grand dossier » d'un stockage S3 |
+| Repo / commit / branche | Projet Git / photo des changements / ligne de travail parallèle |
+| Pull request | Demande de fusion d'une branche, relue avant d'être acceptée |
+| Idempotent | Qu'on peut relancer sans risque : le résultat reste le même |
+| Smoke test | Test minimal qui vérifie qu'un système « s'allume » sans erreur |
 
 ## Pré-requis matériels et logiciels
 
@@ -85,7 +249,7 @@ la déployer et la valider.
 
 Le lab se fait en deux temps. Les étapes **1, 2, 3 et 6** (installations et téléchargements,
 environ 4 Go) se font **avant la séance**, chez vous : trente postes qui téléchargent en même
-temps sur le réseau de la salle, c'est une heure perdue. La séance (1 h) est consacrée au
+temps sur le réseau de la salle, c'est une heure perdue. La séance (1 h 10) est consacrée au
 cluster, aux services et aux vérifications : étapes **4, 5, 7 et 8**.
 
 | # | Étape | Quand | Durée |
@@ -272,8 +436,15 @@ mini-projet** : on la crée maintenant, car le cluster de l'étape 4 se crée de
 
 - Avoir un compte GitHub personnel actif.
 - Avoir une clé SSH ajoutée à votre compte (Settings > SSH and GPG keys).
-- Si vous n'avez pas de clé : `ssh-keygen -t ed25519 -C "votre.email@etu.fr"` puis copier le
-  contenu de `~/.ssh/id_ed25519.pub` dans GitHub.
+- Si vous n'avez pas de clé (sous Windows : **dans le terminal de la VM**, la clé doit être
+  dans la VM) :
+  1. `ssh-keygen -t ed25519 -C "votre.email@etu.fr"` puis Entrée trois fois (emplacement par
+     défaut, pas de phrase de passe) ;
+  2. `cat ~/.ssh/id_ed25519.pub` affiche la clé **publique** (une ligne qui commence par
+     `ssh-ed25519`) : copiez toute la ligne ;
+  3. GitHub > photo de profil > **Settings** > **SSH and GPG keys** > **New SSH key**, collez,
+     puis **Add SSH key**.
+  Ne partagez jamais le fichier `~/.ssh/id_ed25519` (sans `.pub`) : c'est la clé privée.
 
 ```bash
 ssh -T git@github.com
@@ -285,62 +456,72 @@ ssh -T git@github.com
 ### 3.2 Créer votre copie du repo sur GitHub
 
 Ouvrez le repo modèle du cours,
-[https://github.com/ORG_COURS/mlops-cours-2026](https://github.com/ORG_COURS/mlops-cours-2026).
+[https://github.com/firaskhl/mlops-cours-2026](https://github.com/firaskhl/mlops-cours-2026).
 Deux possibilités :
 
 | | **Fork** (recommandé) | **Use this template** |
 |---|---|---|
-| Bouton GitHub | **Fork** > Create fork | **Use this template** > Create a new repository |
+| Bouton GitHub | **Fork** > Create fork | **Use this template** > Create a new repository, case « Include all branches » **décochée** |
 | Visibilité | Public | Public ou privé |
-| Récupérer les correctifs du cours | Simple : bouton « Sync fork » ou `git merge upstream/main` | Plus délicat : historique indépendant |
+| Récupérer les mises à jour du cours | Bouton « Sync fork », ou la commande de l'encadré ci-dessous | La commande de l'encadré ci-dessous (historique indépendant) |
 | GitHub Actions (Lab 6) | À activer une fois dans l'onglet Actions | Actives d'emblée |
 
 Dans les deux cas, gardez le nom **`mlops-cours-2026`** : les scripts de vérification et les
 énoncés le supposent.
 
 > [!IMPORTANT]
-> **Vous travaillez en binôme ?**
-> Le mini-projet noté se fait en binôme dans **un seul repo** : celui que vous allez construire
-> lab après lab.
+> **Vous travaillez en binôme ? Choisissez votre organisation**
+> Le mini-projet se fait en binôme, sur le repo que vous allez construire lab après lab. Deux
+> organisations sont possibles :
 >
-> - **Un seul membre** (le propriétaire) crée le repo comme ci-dessus (fork ou *Use this
->   template*), puis, dans **Settings** > **Collaborators** > **Add people**, ajoute son
->   partenaire (rôle *Write*) et l'enseignant (compte communiqué en cours).
-> - **L'autre membre** ne forke pas : il accepte l'invitation (e-mail ou notifications GitHub),
->   puis clone à l'étape 3.3 le repo du propriétaire (`PROPRIETAIRE/mlops-cours-2026`) et y
->   ajoute lui aussi le remote `upstream`.
-> - **Chacun son cluster** : les deux membres font tout le lab (étapes 4 à 8) sur leur propre
->   poste, avec leur propre `.env`. Le jour de la soutenance, l'un ou l'autre doit pouvoir faire
->   la démo. À partir du Lab 1, celui qui n'a pas piloté un lab remet son cluster à niveau à
->   partir de `main` : chaque énoncé se termine par un encadré « Second membre du binôme ».
+> - **Option A — un repo commun.** Un seul membre (le propriétaire) crée le repo comme
+>   ci-dessus, puis, dans **Settings** > **Collaborators** > **Add people**, ajoute son
+>   partenaire (rôle *Write*) et l'enseignant (compte GitHub **`firaskhl`**). L'autre membre ne
+>   crée pas de repo : il accepte l'invitation, puis clone à l'étape 3.3 le repo du propriétaire
+>   (`PROPRIETAIRE/mlops-cours-2026`) et y ajoute lui aussi le remote `upstream`. À partir du
+>   Lab 1, celui qui n'a pas piloté un lab remet son cluster à niveau à partir de `main` :
+>   chaque énoncé se termine par un encadré « Second membre du binôme ».
+> - **Option B — deux repos coordonnés.** Chaque membre crée **son propre** repo comme
+>   ci-dessus et y ajoute son partenaire (rôle *Write*, pour relire les PR) et l'enseignant
+>   (`firaskhl`).
+>   Chacun fait tous les labs dans son repo ; vous gardez le même jeu de données et vous relisez
+>   mutuellement vos pull requests.
 >
-> Les règles du travail à deux (branches et pull requests relues, protection de `main`, journal
-> de bord, choix du dataset, jalons) sont dans le guide du mini-projet,
-> `labs/m10-capstone/README.md` : lisez-le dès cette semaine.
+> Dans les deux cas, **chacun son cluster** : les deux membres font tout le lab (étapes 4 à 8)
+> sur leur propre poste, avec leur propre `.env`, et chacun commite depuis son propre compte
+> GitHub (l'historique sert à la note individuelle). Les règles du travail à deux (choix de
+> l'option, pull requests relues, protection de `main`, journal de bord, choix du dataset,
+> jalons) sont dans le guide du mini-projet, `labs/m10-capstone/README.md` : lisez-le dès cette
+> semaine.
 
 ### 3.3 Cloner en SSH et déclarer le repo du cours
 
 ```bash
 # Remplacez VOTRE_USER par votre identifiant GitHub
-# (en binôme, le partenaire met ici l'identifiant du propriétaire du repo)
+# (option A : le partenaire met ici l'identifiant du propriétaire du repo commun)
 cd ~
 git clone git@github.com:VOTRE_USER/mlops-cours-2026.git
 cd ~/mlops-cours-2026
 
 # Remote "upstream" = repo du cours, pour récupérer les correctifs en cours de semestre
-git remote add upstream https://github.com/ORG_COURS/mlops-cours-2026.git
+git remote add upstream https://github.com/firaskhl/mlops-cours-2026.git
 git remote -v
 ```
 
 > **Sortie attendue :**
 > `origin git@github.com:VOTRE_USER/mlops-cours-2026.git (fetch)` et `(push)`, puis
-> `upstream https://github.com/ORG_COURS/mlops-cours-2026.git (fetch)` et `(push)`.
+> `upstream https://github.com/firaskhl/mlops-cours-2026.git (fetch)` et `(push)`.
 
 > [!TIP]
-> **Récupérer une mise à jour du cours**
-> Quand l'enseignant annonce un correctif : `git fetch upstream && git merge upstream/main`, puis
-> `git push`. Évitez de modifier les fichiers de `infra/` et `labs/` pour ne pas créer de
-> conflits : votre travail vit à la racine du repo (`src/`, `pipelines/`, etc.).
+> **Récupérer une mise à jour du cours, puis les corrections**
+> Quand l'enseignant annonce une mise à jour des énoncés ou de l'infrastructure (cette commande
+> marche pour un fork comme pour un repo créé avec *Use this template*) :
+> `git fetch upstream && git checkout upstream/main -- labs infra`, puis
+> `git commit -m "Mise à jour du cours"` et `git push`.
+> Après chaque date de rendu, la correction du lab X est publiée dans le repo du cours, sur la
+> branche `solution/mX` : `git fetch upstream && git checkout upstream/solution/mX -- <dossier du lab>`,
+> puis `git commit -m "lab/mX : reprise de la correction"`. Ne modifiez pas les fichiers de
+> `infra/` et `labs/` : votre travail vit à la racine du repo (`src/`, `pipelines/`, etc.).
 
 ### 3.4 Configurer Git
 
@@ -556,7 +737,13 @@ déployer.
 ```bash
 cd ~/mlops-cours-2026
 make cluster
+make preload
 ```
+
+`make preload` copie dans les nœuds kind les images téléchargées par `make prefetch` (étape 6.5) :
+sans lui, le cluster les retéléchargerait depuis Internet à l'étape 5. Si une image n'a pas été
+pré-téléchargée, la commande l'indique et le cluster la téléchargera lui-même : ce n'est pas une
+erreur.
 
 > **Sortie attendue :** une dizaine de lignes de progression : *Ensuring node image
 > (kindest/node:v1.37.0)*, *Preparing nodes*, *Writing configuration*, *Starting control-plane*,
@@ -618,8 +805,8 @@ compris le stockage interne de Kubeflow au Lab 2.
 
 > [!NOTE]
 > **Pourquoi un S3 local et pas un vrai S3 AWS ?**
-> Pour 36h de cours, déployer 50 fois la stack sur AWS coûterait cher et imposerait des comptes
-> individuels. SeaweedFS expose la même API S3 que AWS : tout ce qu'on développe est portable vers
+> Pour tout un cours, déployer la stack de chaque étudiant sur AWS coûterait cher et imposerait des
+> comptes individuels. SeaweedFS expose la même API S3 que AWS : tout ce qu'on développe est portable vers
 > AWS S3, GCS (mode interopérable), Azure Blob (via passerelle) ou OVHcloud Object Storage en
 > changeant uniquement l'endpoint et les identifiants.
 
@@ -1256,8 +1443,10 @@ git log --oneline -3
 > au-dessus de « Lab 0: setup OK ». Le même historique est visible sur GitHub.
 
 > [!TIP]
-> **En binôme : un seul commit, une seule pull request**
-> Le pilote du jour commite et ouvre la PR ; l'autre la relit et l'approuve. Une fois la PR
+> **En binôme**
+> En option B, chacun commite et ouvre sa PR dans son propre repo, et le partenaire la relit.
+> En option A, un seul commit et une seule PR : le pilote du jour commite et ouvre la PR ;
+> l'autre la relit et l'approuve. Une fois la PR
 > fusionnée, l'autre membre supprime ses deux fichiers locaux, identiques, et récupère `main` :
 > `rm NOTES.md labs/m0-setup/smoke_mlflow.py && git pull`. Son `make check-m0` passe aussi : son
 > smoke test a écrit dans **son** MLflow, et le fichier est commité et poussé. Pour la suite
@@ -1323,6 +1512,7 @@ repo du cours.
 | `uv sync` : `No interpreter found for Python 3.12` | Python 3.12 pas installé. | `uv python install 3.12`. |
 | MLflow UI vide après run | Tracking URI pointe sur une autre instance. | `echo $MLFLOW_TRACKING_URI` doit afficher `http://localhost:5000` ; recharger `.env`. |
 | `git push` : `Permission denied (publickey)` | Clé SSH non ajoutée à GitHub. | `ssh -T git@github.com` pour tester, ajouter la clé sur GitHub. |
+| `ssh: connect to host github.com port 22: Connection timed out` | Le réseau (école, entreprise) bloque le port 22. | SSH par le port 443 : dans `~/.ssh/config`, `Host github.com` puis `Hostname ssh.github.com` et `Port 443` (documentation GitHub « Using SSH over the HTTPS port »). |
 | WSL2 : Docker très lent / fichiers introuvables | Code dans `/mnt/c/` au lieu de `/home/`. | Cloner et travailler dans le système de fichiers Linux WSL. |
 | VM Vagrant : `http://localhost:5000` ne répond pas sous Windows | `make pf` pas lancé dans la VM, ou port déplacé par Vagrant. | Dans la VM : `make pf` ; sous Windows : `vagrant port` ; voir `infra/vagrant/README.md`. |
 | VM Vagrant : `docker: permission denied` ou `uv: command not found` | Session SSH ouverte pendant le provisioning. | `exit` puis `vagrant ssh`. |

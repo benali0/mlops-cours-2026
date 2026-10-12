@@ -2,13 +2,13 @@
 module: 10
 lab: 10
 title: "Mini-projet MLOps"
-subtitle: "Le repo construit lab après lab, une extension par étudiant, une soutenance avec défi en direct"
+subtitle: "Le repo construit lab après lab, déployé dans le cloud, une extension par étudiant, une soutenance avec défi en direct"
 running_title: "Module 10 — Mini-projet MLOps"
-duree: "Travail continu de S1 à S12 · lancement des extensions en S8 · soutenance de 25 min par binôme"
-format: "Binôme · un repo commun, un cluster par membre · Linux / macOS / WSL2"
-prerequis: "Labs 0 à 8 (le socle) ; Lab 9 recommandé pour l'extension RAG"
-livrable: "Repo taggé j0 / j1 / j2 / final + rapport (10 p. max) + slides + vidéo de 3 min + soutenance"
-stack: "Toute la stack du cours : DVC · MLflow · KFP · KServe · GitHub Actions · Argo CD · Prometheus · Evidently · Fairlearn"
+duree: "Travail continu de S1 à S9 · extensions déclarées en S5 · soutenance de 25 min par binôme en S9"
+format: "Binôme · un repo commun ou deux repos coordonnés, un cluster par membre · Linux / macOS / Windows (VM du cours)"
+prerequis: "Labs 0 à 8 (le socle) ; Lab 9 recommandé pour l'extension RAG ; un compte chez un fournisseur cloud"
+livrable: "Repo taggé j0 / j1 / j2 / final + projet déployé (URL HTTPS) + rapport numérique (10 p. max) + poster A1 avec deux QR codes + soutenance"
+stack: "Toute la stack du cours : DVC · MLflow · KFP · KServe · GitHub Actions · Argo CD · Prometheus · Evidently · Fairlearn · un fournisseur cloud au choix"
 ---
 
 # Module 10 — Mini-projet MLOps
@@ -22,11 +22,12 @@ Ce mini-projet ne cherche pas à évaluer votre capacité à entraîner un modè
 reproductible, observable, auditable et éthique. Une régression logistique qui traverse toutes
 les étapes du cours vaut plus qu'un réseau de neurones seul dans un notebook Jupyter.
 
-Il n'y a pas de « projet de fin de cours » à démarrer en S8 : **le mini-projet est le repo que
+Il n'y a pas de « projet de fin de cours » à démarrer au dernier moment : **le mini-projet est le repo que
 votre binôme construit lab après lab**, depuis le Lab 0. Chaque lab ajoute une brique au même
-système ; à la fin du semestre, ce système complet, que nous appelons le **socle**, est évalué
-comme un projet. Chaque membre du binôme y ajoute ensuite **une extension personnelle**, puis le
-défend en soutenance, y compris face à un **incident provoqué en direct**.
+système ; à la fin du cours, ce système complet, que nous appelons le **socle**, est évalué
+comme un projet. L'API de ce socle est aussi **déployée chez un fournisseur cloud**, accessible à
+tous depuis un QR code de votre **poster**. Chaque membre du binôme ajoute ensuite **une extension
+personnelle**, puis la défend en soutenance, y compris face à un **incident provoqué en direct**.
 
 > [!NOTE]
 > **Les quatre principes directeurs**
@@ -42,13 +43,15 @@ défend en soutenance, y compris face à un **incident provoqué en direct**.
 
 | Élément | En bref |
 |---|---|
-| Équipe | Binôme, un seul repo `mlops-cours-2026`, chacun son cluster kind |
-| Cas d'usage | Credit scoring (Statlog German Credit) par défaut, ou dataset libre validé avant le Lab 1 |
-| Socle (commun) | Les Labs 0 à 8 appliqués à votre cas d'usage, vérifiés par `make check-m0` … `make check-m8` |
+| Équipe | Binôme : **option A**, un repo commun, ou **option B**, deux repos coordonnés (un par étudiant) ; chacun son cluster kind |
+| Cas d'usage | Credit scoring (Statlog German Credit) par défaut, ou dataset libre validé avant le Lab 1 ; le même pour les deux membres |
+| Socle | Les Labs 0 à 8 appliqués à votre cas d'usage, vérifiés par `make check-m0` … `make check-m8` |
+| Déploiement cloud | L'API de scoring en ligne, en HTTPS, chez un fournisseur cloud (Azure, Google Cloud, AWS ou autre). Non enseigné en séance : travail autonome |
 | Extension (individuelle) | Une par étudiant, choisie dans un catalogue de 16 (ou hors catalogue validée), niveau ★ à ★★★ |
-| Jalons | `j0` Setup (fin S3) · `j1` MVP (fin S8) · `j2` Production (fin S11) · `final` 48 h avant la soutenance |
-| Soutenance (S12) | 25 min : démo du socle, deux extensions, deux défis en direct, questions |
-| Note | /40 : socle 12 + livrables écrits 6 (communs), extension 12 + défi et questions 10 (individuels) |
+| Jalons | `j0` Setup (fin S3) · extensions déclarées (fin S5) · `j1` MVP (fin S7) · `j2` Production (fin S8) · `final` 48 h avant la soutenance |
+| Livrables | Le repo GitHub, le projet déployé, un **rapport numérique** (PDF, 10 p. max) et un **poster** A1 qui porte deux QR codes (projet en ligne, repo) |
+| Soutenance (S9) | 25 min devant le poster : démo du projet déployé, deux extensions, deux défis en direct, questions |
+| Note | /40 : socle 12 (dont déploiement cloud 3), extension 12, défi et questions 10, livrables 6 ; la part commune ou individuelle dépend de l'option (voir la grille) |
 | Poids | 40 % de la note finale ; 8/20 minimum au mini-projet, sans compensation |
 
 ## Règles du jeu
@@ -93,8 +96,9 @@ soit validé avant la séance du Lab 1 (S2)**. Conditions, toutes obligatoires :
 | Au moins un attribut sensible | Le Lab 8 (équité) et le monitoring par groupe doivent avoir un objet |
 | Aucune donnée identifiante | Ni nom, ni adresse, ni e-mail, ni numéro d'identité ou de téléphone |
 
-**Proposer un dataset** : ouvrez une issue sur le repo du cours
-([https://github.com/ORG_COURS/mlops-cours-2026](https://github.com/ORG_COURS/mlops-cours-2026),
+**Proposer un dataset** (une seule issue par binôme, quelle que soit l'option) : ouvrez une
+issue sur le repo du cours
+([https://github.com/firaskhl/mlops-cours-2026](https://github.com/firaskhl/mlops-cours-2026),
 bouton **Issues** > **New issue** > **Mini-projet : proposer un dataset libre**). Le formulaire
 demande le **lien, la licence, la taille, la cible, les attributs sensibles et le contexte en
 5 lignes** (qui utiliserait le modèle, pour quelle décision, ce que coûte chaque type d'erreur).
@@ -123,45 +127,74 @@ Et des contre-exemples, tirés des anciens sujets du capstone :
 | C — RAG sur documentation interne | ↪️ Devient l'extension `rag-projet` | Pas tabulaire, mais excellent comme extension (voir le catalogue) |
 | D — Contrôle visuel industriel (MVTec AD) | ❌ | Images, pas tabulaire ; licence non commerciale ; GPU recommandé |
 
-### Travail en binôme
+### Travail en binôme : deux organisations possibles
 
-- **Un repo par binôme.** Un seul membre crée le repo `mlops-cours-2026` depuis le repo modèle
-  du cours (Lab 0, étape 3.2 : fork ou *Use this template*) et ajoute son **partenaire et
-  l'enseignant comme collaborateurs**. Le partenaire **clone** ce repo (il ne crée pas le sien).
+Vous travaillez à deux sur **le même cas d'usage**, mais vous choisissez comment partager le
+code : un repo commun (option A), ou un repo chacun que vous coordonnez (option B). Dans les deux
+cas, chaque membre fait tourner le socle complet sur son propre poste.
+
+| | Option A — un repo commun | Option B — deux repos coordonnés |
+|---|---|---|
+| Repos GitHub | 1 repo, créé par un membre depuis le repo modèle ; l'autre y est collaborateur et le **clone** | 2 repos, chacun créé depuis le repo modèle par son auteur |
+| Labs | Faits ensemble (pilote / copilote), puis rejoués par l'autre membre sur son cluster | Chacun fait tous les labs dans son repo |
+| Coordination | Branches `lab/*` et `ext/*`, fusionnées par une PR relue par le partenaire | Même `dataset.yaml`, décisions communes dans des ADR identiques, revue croisée des PR |
+| Socle (12 points) | Noté une fois : note commune | Noté sur chaque repo : note individuelle |
+| Extensions | Les deux dans le même repo | Chacune dans le repo de son auteur |
+| Déploiement cloud | Un seul, depuis le repo commun | Un seul, depuis le repo choisi comme **référence** |
+| Rapport et poster | Dans le repo commun | Les mêmes fichiers dans les deux repos |
+| QR codes du poster | Projet déployé + repo | Projet déployé + les deux repos |
+| Conseillée si | Vous aimez coder à deux et avez des créneaux communs | Vous voulez chacun maîtriser tout le socle, ou vos emplois du temps diffèrent |
+
+Règles communes aux deux options :
+
+- **Déclarez votre choix au jalon J0** (fin S3) : section « Organisation du binôme » en tête du
+  README, avec l'option et le lien du ou des repos (en option B, dans les deux repos, avec le
+  repo de référence). Le choix ne change plus ensuite.
+- **Collaborateurs** : sur chaque repo, ajoutez **le partenaire** (il relit vos PR) et
+  **l'enseignant**.
 - **Chacun son cluster.** Les deux membres font tourner le socle complet sur leur propre poste
-  (`make up`, `make pf`, puis les installations de chaque lab). Le jour de la soutenance, l'un
-  ou l'autre doit pouvoir faire la démo. Après chaque lab, celui qui n'a pas piloté remet son
-  cluster à niveau à partir de `main` avec l'encadré « Second membre du binôme » de l'énoncé
-  (`dvc repro` et non `dvc pull` : le remote DVC est propre à chaque cluster). À partir du
-  Lab 6, la production est commune (Argo CD suit le même `main` sur les deux clusters) mais
-  chaque MLflow a ses propres numéros de version : le modèle servi vient du MLflow d'un seul
-  des deux membres, et c'est sur son cluster que tous les checks sont verts.
+  (`make up`, `make pf`, puis les installations de chaque lab) : le défi en direct se passe sur
+  le cluster de chacun.
+  - *Option A* : après chaque lab, celui qui n'a pas piloté remet son cluster à niveau à partir
+    de `main` avec l'encadré « Second membre du binôme » de l'énoncé (`dvc repro` et non
+    `dvc pull` : le remote DVC est propre à chaque cluster). À partir du Lab 6, la production
+    est commune (Argo CD suit le même `main` sur les deux clusters) mais chaque MLflow a ses
+    propres numéros de version : le modèle servi vient du MLflow d'un seul des deux membres, et
+    c'est sur son cluster que tous les checks sont verts.
+  - *Option B* : chaque repo a son propre `main`, sa CI et son Argo CD ; l'encadré « Second
+    membre du binôme » ne vous concerne pas. Gardez le même `dataset.yaml` (et
+    `src/download.py`) dans les deux repos : une modification se reporte dans l'autre repo le
+    même jour.
 - **`main` est protégée contre les accidents** (pas de force-push, pas de suppression) et le
   travail humain passe par des branches `lab/mX-…` (un lab) et `ext/<nom>` (une extension),
   fusionnées par **pull request relue par le partenaire**. Seuls les commits automatiques du
   bot GitOps (Lab 6) arrivent directement sur `main`.
-- **Pilote / copilote alterné** : à chaque lab, l'un tape (pilote), l'autre relit, anticipe,
-  cherche dans la doc (copilote) ; on inverse au lab suivant. Les deux doivent savoir tout
-  expliquer : le défi en direct est individuel.
-- **Chacun commite depuis son propre compte GitHub** : l'historique Git sert à individualiser la
-  note. Une session à deux sur un seul poste se commite avec un *trailer*
+- **Pilote / copilote alterné** (option A) : à chaque lab, l'un tape (pilote), l'autre relit,
+  anticipe, cherche dans la doc (copilote) ; on inverse au lab suivant. Dans les deux options,
+  chacun doit savoir tout expliquer : le défi en direct est individuel.
+- **Chacun commite depuis son propre compte GitHub** : l'historique Git sert à la note
+  individuelle. Une session à deux sur un seul poste se commite avec un *trailer*
   `Co-authored-by: Prénom Nom <email>`.
 - **Journal de bord** : `docs/journal.md`, 3 à 5 lignes par séance (qui a piloté, ce qui est
-  fait, ce qui bloque, la suite).
-- **Décisions** : au moins **3 ADR** dans `docs/adr/` au rendu final (voir « Livrables écrits »).
+  fait, ce qui bloque, la suite) ; en option B, chacun tient le sien.
+- **Décisions** : au moins **3 ADR** dans `docs/adr/` au rendu final (voir « Les livrables ») ;
+  en option B, les ADR communs (métrique, seuil, fournisseur cloud…) sont identiques dans les
+  deux repos.
 - **Rattrapage** : une correction est publiée après chaque rendu de lab. Un binôme en retard
   peut la reprendre pour remettre son socle à niveau ; il le fait **de façon traçable** (commit
   « reprise de la correction mX », ligne dans le journal) et adapte ce qui doit l'être à son
   dataset.
 
-## Mettre en place le repo du binôme
+## Mettre en place le ou les repos
 
-À faire une fois, en S1 ou S2, par le membre qui possède le repo (sauf mention contraire).
+À faire une fois, en S1 ou S2, par le propriétaire de chaque repo : en option A, le membre qui a
+créé le repo commun ; en option B, chacun pour le sien.
 
 ### Collaborateurs et protection de `main`
 
-1. **Settings** > **Collaborators** > **Add people** : le partenaire (rôle *Write*) et
-   l'enseignant (compte communiqué en cours).
+1. **Settings** > **Collaborators** > **Add people** : le partenaire (rôle *Write* : en
+   option A il pousse ses branches, en option B il relit vos PR) et l'enseignant (compte
+   GitHub `firaskhl`).
 2. **Settings** > **Rules** > **Rulesets** > **New branch ruleset** : cible *Default branch*,
    activer **Block force pushes** et **Restrict deletions**, statut *Active*. N'activez **pas**
    *Require a pull request before merging* : le bot GitOps du Lab 6 (CI et `gitops … --push`)
@@ -194,7 +227,8 @@ mlops-cours-2026/
 │   ├── adr/README.md             # règles et index des ADR
 │   ├── adr/0000-modele.md        # modèle d'ADR
 │   ├── dataset-card.md           # fiche du dataset, pré-remplie pour German Credit
-│   ├── rapport-technique.md      # plan du rapport (le PDF rendu : docs/rapport.pdf)
+│   ├── rapport-technique.md      # plan du rapport numérique (le PDF rendu : docs/rapport.pdf)
+│   ├── poster.md                 # contenu et mise en page du poster (le PDF : docs/poster.pdf)
 │   └── soutenance.md             # déroulé de la soutenance et checklist de préparation
 ├── model-card/model-card.md      # produite au Lab 8
 ├── .github/
@@ -207,11 +241,12 @@ mlops-cours-2026/
 ### Premier tour de piste
 
 ```bash
-# Membre 2 (le partenaire) : cloner le repo du binôme
+# Option A — membre 2 (le partenaire) : cloner le repo commun
+# Option B — chacun : cloner SON repo, créé depuis le repo modèle (Lab 0, étape 3.2)
 cd ~
 git clone git@github.com:PROPRIETAIRE/mlops-cours-2026.git
 cd ~/mlops-cours-2026
-git remote add upstream https://github.com/ORG_COURS/mlops-cours-2026.git
+git remote add upstream https://github.com/firaskhl/mlops-cours-2026.git
 
 # Les deux : son propre cluster et son propre .env
 cp .env.example .env
@@ -230,25 +265,25 @@ git push -u origin lab/m0-journal
 > « Collaborateurs et protection de `main` ») : par convention, le partenaire relit et approuve
 > avant que vous ne fusionniez.
 
-## Feuille de route sur 12 semaines
+## Feuille de route sur 9 séances
 
-| Semaines | Phase | Labs | Ce que fait le binôme | Jalon |
+| Séances | Phase | Labs | Ce que fait le binôme | Jalon |
 |---|---|---|---|---|
-| S1-S3 | Fondations | M0, M1 | Repo, clusters, choix du dataset (validé **avant S2**), `dataset.yaml`, DVC, MLflow | **J0 Setup** fin S3, tag `j0` |
-| S4-S6 | Pipeline et qualité | M2, M3, M4 | Pipeline orchestré, gates de validation, image de service | — |
-| S7-S8 | Mise en service | M5 | Modèle servi par KServe ; **chaque membre déclare son extension** | **J1 MVP** fin S8, tag `j1` |
-| S9-S11 | Industrialisation | M6, M7, M8 (M9 hors socle) | CI/CD, monitoring, gouvernance ; extensions développées puis fusionnées | **J2 Production** fin S11, tag `j2` |
-| S12 − 48 h | Rendu | — | Rapport, slides, vidéo, journal et ADR à jour | tag `final` |
-| S12 | Soutenance | M10 | 25 min par binôme | — |
+| S1-S3 | Fondations | M0, M1, M2 | Organisation choisie (option A ou B), repo(s), clusters, choix du dataset (validé **avant S2**), `dataset.yaml`, DVC, MLflow, pipeline orchestré | **J0 Setup** fin S3, tag `j0` |
+| S4-S5 | Qualité et packaging | M3, M4 | Gates de validation, image de service ; **chaque membre déclare son extension** (fin S5) ; compte cloud ouvert | — |
+| S6-S7 | Mise en service et automatisation | M5, M6 | Modèle servi par KServe, CI/CD/CT ; extensions en développement | **J1 MVP** fin S7, tag `j1` |
+| S8 | Industrialisation | M7, M8 (M9 optionnel, hors socle) | Monitoring, gouvernance ; extensions fusionnées ; déploiement cloud en cours | **J2 Production** fin S8, tag `j2` |
+| S9 − 48 h | Rendu | — | **API déployée sur le cloud**, rapport numérique, poster et ses QR codes, journal et ADR à jour | tag `final` |
+| S9 | Soutenance | M10 | 25 min par binôme, devant le poster | — |
 
-Ce que chaque jalon contient :
+Ce que chaque jalon contient (en option B, chaque repo pose ses propres tags) :
 
 | Tag | Quand | Contenu attendu | Vérifié par |
 |---|---|---|---|
-| `j0` | fin S3 | `dataset.yaml` (validé si dataset libre), données versionnées par DVC, runs dans MLflow, `make check-m0` et `make check-m1` verts | `make check-m10 JALON=j0` |
-| `j1` | fin S8 | pipeline avec gate de validation, modèle servi par KServe, `make check-m2` à `make check-m5` verts, extensions déclarées | `make check-m10 JALON=j1` |
-| `j2` | fin S11 | CI/CD, monitoring, model card, `make check-m6` à `make check-m8` verts, **extensions fusionnées** | `make check-m10 JALON=j2` |
-| `final` | 48 h avant la soutenance | tout ce qui précède + rapport PDF (10 p. max), slides, vidéo de démo (3 min), journal, ADR | `make check-m10` |
+| `j0` | fin S3 | organisation déclarée dans le README, `dataset.yaml` (validé si dataset libre), données versionnées par DVC, runs dans MLflow, `make check-m0` et `make check-m1` verts | `make check-m10 JALON=j0` |
+| `j1` | fin S7 | pipeline avec gate de validation, modèle servi par KServe, `make check-m2` à `make check-m5` verts, extensions déclarées (depuis la fin de S5), compte cloud ouvert avec une alerte de budget (noté dans le journal) | `make check-m10 JALON=j1` |
+| `j2` | fin S8 | CI/CD, monitoring, model card, `make check-m6` à `make check-m8` verts, **extensions fusionnées** | `make check-m10 JALON=j2` |
+| `final` | 48 h avant la soutenance | tout ce qui précède + **projet déployé** à une URL publique HTTPS donnée dans le README, rapport numérique `docs/rapport.pdf` (10 p. max), poster `docs/poster.pdf` et ses QR codes testés, journal, ADR | `make check-m10` |
 
 > [!IMPORTANT]
 > **J0 et J1 ne sont pas notés**
@@ -256,15 +291,11 @@ Ce que chaque jalon contient :
 > pré-contrôle très rouge à J0 ou J1 déclenche un point avec l'enseignant, pas une pénalité.
 > Seul l'état au tag `final` est évalué.
 
-**Format intensif** (4 jours) : les jalons tombent en fin de J1 (`j0`), de J2 (`j1`, extensions
-déclarées) et de J3 (`j2`, socle complet), puis 2 à 3 semaines de finalisation (extensions
-fusionnées, livrables écrits) avant le tag `final` et une soutenance à distance. Le dataset
-libre doit alors être validé avant le premier jour.
-
 ## Rendre un jalon
 
 Un jalon se rend en posant un **tag Git** sur le commit de `main` qui fait foi, puis en le
-poussant. Rien d'autre à envoyer : l'enseignant lit le tag.
+poussant. Rien d'autre à envoyer : l'enseignant lit le tag. En option B, chacun pose le tag dans
+son propre repo.
 
 ```bash
 git switch main && git pull
@@ -301,10 +332,11 @@ mêmes vérifications servent à noter le socle.
 | M8 | Scans (Trivy, ModelScan), équité (Fairlearn), explicabilité (SHAP), model card | `make check-m8` |
 | M9 | LLMOps (RAG) — **hors socle** : non exigé, base de l'extension `rag-projet` | — |
 
-Trois critères notent le socle (voir la grille) :
+Quatre critères notent le socle (voir la grille ; en option B, les trois premiers sont notés sur
+chaque repo) :
 
 1. **Les checks sont verts** : `make check-m0` … `make check-m8` au tag `final`, sur le cluster
-   qui sert à la démo.
+   montré en soutenance.
 2. **Reproductibilité** : depuis un poste qui n'a jamais vu le projet, `git clone`, `make up`,
    `uv sync` puis `dvc repro` suffisent à reconstruire les données et le modèle, et
    `dvc push` remplit le remote DVC de ce poste. `dvc pull` ne suffit pas : le remote DVC
@@ -315,6 +347,87 @@ Trois critères notent le socle (voir la grille) :
    Le seuil de promotion et le seuil de décision sont justifiés par la matrice de coûts ;
    l'équité est analysée et surveillée sur vos attributs sensibles ; les alertes ont un sens
    métier ; rien n'est écrit en dur (tout vient de `dataset.yaml`).
+4. **Déploiement cloud** : l'API du socle répond à une URL publique HTTPS et la procédure est
+   documentée dans le README (section suivante).
+
+## Déployer sur le cloud
+
+Votre projet doit être **accessible publiquement, en HTTPS, chez un fournisseur cloud** (Google
+Cloud, Azure, AWS ou autre) : c'est la cible du premier QR code du poster. Ce déploiement **n'est
+pas enseigné en séance** ; vous le réalisez en autonomie, avec la documentation du fournisseur.
+Le socle, lui, reste sur votre cluster kind : c'est là que tournent les checks et le défi en
+direct.
+
+### Exigence minimale
+
+L'API de scoring du Lab 4, dans l'image que votre CI construit au Lab 6, tourne chez le
+fournisseur choisi :
+
+- elle répond en HTTPS sur `/health` et `/predict` ;
+- sa page `/docs` permet d'essayer une prédiction depuis un téléphone ;
+- elle sert le modèle `@champion` de votre registre, dont la version s'affiche sur `/metadata` ;
+- le README donne l'URL, le fournisseur et la procédure de déploiement (section « Projet en
+  ligne »).
+
+**Pour aller plus loin** (valorisé, à décrire dans le rapport) : déploiement automatique par la
+CI, infrastructure décrite en code (Terraform), cluster Kubernetes managé (GKE, AKS, EKS) avec
+KServe, monitoring chez le fournisseur.
+
+### Le point de départ : l'image publiée par votre CI
+
+Depuis le Lab 6, chaque push sur `main` publie une image testée
+`ghcr.io/<propriétaire>/mlops-cours-2026/scoring-api:<tag>`. Elle est **autonome** : le modèle
+ONNX et ses métadonnées y sont copiés au build (Lab 4), elle n'a besoin ni de MLflow ni de votre
+cluster. Elle écoute sur le **port 8000**. Deux réglages suffisent en général :
+
+- rendez le package public (GitHub > votre profil > **Packages** > `scoring-api` > **Package
+  settings** > **Change visibility**), ou donnez au fournisseur un jeton GitHub en lecture seule
+  (`read:packages`) ;
+- déclarez le port 8000 comme port du conteneur (ou port cible) chez le fournisseur.
+
+### Fournisseurs
+
+| Fournisseur | Offre gratuite (octobre 2026) | Service conseillé pour l'API |
+|---|---|---|
+| Azure | Azure for Students : 100 $ de crédit valable 1 an, sans carte bancaire (inscription avec l'e-mail de l'école) | Azure Container Apps : image depuis « Docker Hub or other registries », entrée « Accepting traffic from anywhere », port cible 8000 |
+| Google Cloud | Essai gratuit : 300 $ sur 90 jours (moyen de paiement demandé, non débité) ; Cloud Run offre en plus 2 millions de requêtes par mois | Cloud Run : accepte directement une image publique de GHCR, port du conteneur 8000 |
+| AWS | Plan gratuit : 100 $ de crédits à l'inscription, jusqu'à 200 $, pendant 6 mois | Amazon ECS Express Mode : URL HTTPS et équilibreur de charge créés pour vous ; l'équilibreur est facturé en continu sur vos crédits (App Runner n'accepte plus de nouveaux clients) |
+| Autre | Tout fournisseur qui donne une URL publique HTTPS stable (OVHcloud, Scaleway, DigitalOcean…), après accord de l'enseignant | Service de conteneurs du fournisseur |
+
+Points de départ dans la documentation officielle :
+[Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/get-started-existing-container-image-portal),
+[Cloud Run](https://docs.cloud.google.com/run/docs/deploying),
+[ECS Express Mode](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/express-service-overview.html).
+
+### Règles
+
+- **Un déploiement par binôme** (en option B, depuis le repo de référence).
+- L'URL reste en ligne **de la remise du tag `final` jusqu'à la publication des notes**.
+- **Budget** : créez une alerte de budget dès l'ouverture du compte, et supprimez les ressources
+  après l'évaluation.
+- **Aucun secret dans Git** : les identifiants cloud vont dans les secrets GitHub (ou restent
+  dans la console du fournisseur).
+- **Données publiques uniquement** : le credit scoring ou votre dataset validé, jamais de données
+  personnelles.
+
+### Vérifier le déploiement
+
+```bash
+URL=https://votre-api.exemple            # l'URL donnée par le fournisseur
+curl -fsS "$URL/health"
+curl -fsS "$URL/metadata" | jq .model    # même version que scoring-model@champion
+uv run python packaging/sample_request.py > /tmp/request.json
+curl -fsS -X POST "$URL/predict" -H "Content-Type: application/json" -d @/tmp/request.json
+```
+
+> **Sortie attendue :** `{"status":"ok","model_loaded":true}`, la version du modèle, puis une
+> prédiction. Ouvrez aussi `$URL/docs` sur votre téléphone, hors du Wi-Fi de l'école.
+
+> [!TIP]
+> **Le réveil du service**
+> Cloud Run et Azure Container Apps peuvent descendre à zéro instance sans trafic : la première
+> requête attend alors le démarrage du conteneur. Le jour de la soutenance, appelez `/health`
+> quelques minutes avant votre passage, ou fixez une instance minimale pendant la journée.
 
 ## L'extension personnelle
 
@@ -328,11 +441,11 @@ Trois critères notent le socle (voir la grille) :
   Une extension ★ parfaitement réussie vaut donc 8 ; une ★★★ inaboutie peut valoir moins.
 - **Livrables** de chaque extension :
   - une branche `ext/<nom>` fusionnée dans `main` par une **PR relue** par le partenaire, dont
-    le titre commence par `ext/<nom>` ;
+    le titre commence par `ext/<nom>` (en option B, dans votre propre repo) ;
   - des **tests** automatisés (pytest, CI ou script de vérification rejouable) ;
   - un **ADR** (la décision structurante de l'extension) ;
-  - **une page** dans le rapport technique.
-- **Hors catalogue** : possible si l'extension est validée **avant la fin de S8** (même issue,
+  - **une page** dans le rapport numérique, et sa place sur le poster.
+- **Hors catalogue** : possible si l'extension est validée **avant la fin de S5** (même issue,
   option « hors-catalogue », avec niveau proposé, compétences visées et critères de réussite).
 - L'extension **s'appuie sur le socle** (elle l'étend, elle ne le remplace pas) et ne doit pas
   le casser : les `make check-mX` restent verts après la fusion.
@@ -346,11 +459,11 @@ Trois critères notent le socle (voir la grille) :
    (étapes, tests, ADR, RAM supplémentaire estimée) et cochez les engagements.
 3. L'enseignant répond par le label `validé` (ou propose une alternative si le quota du groupe
    est atteint).
-4. Dans le repo du binôme : `git switch -c ext/<nom>`, premier commit (squelette + ADR au statut
-   « proposé »), puis ouvrez tout de suite une PR en brouillon (*Draft*) : votre partenaire suit
-   l'avancement et la relecture finale sera plus rapide.
+4. Dans votre repo (le repo commun en option A) : `git switch -c ext/<nom>`, premier commit
+   (squelette + ADR au statut « proposé »), puis ouvrez tout de suite une PR en brouillon
+   (*Draft*) : votre partenaire suit l'avancement et la relecture finale sera plus rapide.
 
-Date limite : **fin de S8** (jalon J1) pour toutes les déclarations.
+Date limite : **fin de S5** pour toutes les déclarations.
 
 > [!TIP]
 > **Pensez mémoire**
@@ -759,13 +872,14 @@ d'exploitation qui connaît votre README, vos ADR et votre runbook.
 
 ## La soutenance
 
-**25 minutes par binôme**, en S12, sur le cluster de l'un des deux membres :
+**25 minutes par binôme**, en S9, **devant votre poster** : 5 minutes en commun, puis 10 minutes
+de passage individuel pour chaque membre.
 
 | Durée | Qui | Contenu |
 |---|---|---|
-| 5 min | Binôme | **Démo du socle de bout en bout** : une modification (code, données ou paramètre) traverse la chaîne jusqu'au modèle servi, et se voit dans le monitoring |
-| 2 × 5 min | Chacun | **Son extension** : objectif, démonstration en direct, tests, ADR |
-| 2 × 4 min | Chacun | **Défi en direct** : un incident tiré au sort est provoqué sur le socle ; vous le diagnostiquez et le corrigez à voix haute |
+| 5 min | Binôme | **Présentation du poster et démo du projet déployé** : le jury scanne le QR code et envoie lui-même une prédiction |
+| 2 × 5 min | Chacun | **Son extension** : problème traité, démonstration en direct, tests, compromis assumés (ADR) |
+| 2 × 4 min | Chacun | **Défi en direct sur son propre cluster** : un incident tiré au sort est provoqué sur le socle ; vous le diagnostiquez et le corrigez à voix haute |
 | 2 min | Binôme | **Questions** du jury |
 
 Le **défi** est tiré au sort parmi six familles d'incidents : **données invalides**, **drift**,
@@ -774,10 +888,14 @@ manquant**. Le partenaire ne souffle pas. On évalue la **démarche** : hypothè
 outils choisis pour les vérifier, lecture des signaux, correction (ou, faute de temps, la
 correction que vous appliqueriez et comment vous vérifieriez qu'elle marche).
 
-**Plan B** si votre cluster ne démarre pas le jour J : la vidéo de démo de 3 minutes remplace
-la démo du socle, et le défi se fait sur le cluster de l'enseignant, avec votre repo
-reconstruit par `dvc repro` (le remote DVC de votre cluster n'est pas joignable d'un autre
-poste) : d'où l'importance du test de reproductibilité avant le tag `final`.
+**Plans B** :
+
+- **Le projet déployé ne répond pas** : la démo se fait en local (l'image de l'API lancée avec
+  `docker run` comme au Lab 4, et le modèle servi par KServe sur votre cluster), et le critère
+  « déploiement cloud » de la grille en tient compte.
+- **Votre cluster ne démarre pas** : le défi se fait sur le cluster de l'enseignant, avec votre
+  repo reconstruit par `dvc repro` (le remote DVC de votre cluster n'est pas joignable d'un
+  autre poste) : d'où l'importance du test de reproductibilité avant le tag `final`.
 
 Le déroulé détaillé et la checklist de préparation (J-7, J-2, veille et jour J) sont dans
 `docs/soutenance.md`.
@@ -845,55 +963,80 @@ make check-m5                                            # l'état attendu, item
 
 ## Grille d'évaluation (sur 40)
 
-| Bloc | Pts | Qui | Critère | Pts |
+L'extension, le défi et les questions sont toujours notés individuellement ; pour le reste, la
+portée dépend de votre organisation (A : repo commun, B : deux repos).
+
+| Bloc | Pts | Critère | Pts | Portée |
 |---|---|---|---|---|
-| **Socle** | **12** | Binôme | `make check-m0` → `make check-m8` verts au tag `final` | 6 |
-| | | | Reproductibilité : `git clone`, `make up`, `uv sync`, `dvc repro` (+ `dvc push`) | 3 |
-| | | | Adaptation au cas d'usage (seuils et coûts, équité, alertes, rien en dur) | 3 |
-| **Extension** | **12** | Individuel | Fonctionne et est intégrée au socle (attendus minimaux) | 5 |
-| | | | Tests, ADR, documentation (page du rapport) | 3 |
-| | | | Maîtrise à l'oral (démo, questions sur les choix) | 4 |
-| | | | *Plafond selon le niveau : ★ → 8, ★★ → 11, ★★★ → 12* | |
-| **Défi et questions** | **10** | Individuel | Diagnostic de l'incident | 4 |
-| | | | Démarche et outils | 3 |
-| | | | Correction et réponses aux questions | 3 |
-| **Livrables écrits** | **6** | Binôme | README, dataset card, model card | 3 |
-| | | | Rapport technique (10 pages max) | 2 |
-| | | | Journal de bord et historique Git | 1 |
+| **Socle** | **12** | `make check-m0` → `make check-m8` verts au tag `final`, sur le cluster montré en soutenance | 5 | A : binôme · B : individuel |
+| | | Reproductibilité : `git clone`, `make up`, `uv sync`, `dvc repro` (+ `dvc push`) et le pipeline | 2 | A : binôme · B : individuel |
+| | | Adaptation au cas d'usage : `dataset.yaml`, seuils et coûts, équité, alertes, rien en dur | 2 | A : binôme · B : individuel |
+| | | Déploiement cloud : URL publique HTTPS qui répond, procédure documentée dans le README | 3 | Binôme |
+| **Extension** | **12** | Fonctionne et s'intègre au socle (attendus minimaux) | 5 | Individuel |
+| | | Tests, ADR et documentation (page du rapport) | 3 | Individuel |
+| | | Maîtrise à l'oral : choix et compromis justifiés | 4 | Individuel |
+| | | *Plafond selon le niveau : ★ → 8, ★★ → 11, ★★★ → 12* | | |
+| **Défi et questions** | **10** | Diagnostic de l'incident | 4 | Individuel |
+| | | Démarche et usage des outils | 3 | Individuel |
+| | | Correction proposée et réponses aux questions | 3 | Individuel |
+| **Livrables** | **6** | Rapport numérique (10 pages max) | 3 | Binôme |
+| | | Poster : lisible, complet, QR codes fonctionnels | 2 | Binôme |
+| | | Repo documenté : README, dataset card, model card, journal, ADR, historique Git | 1 | A : binôme · B : individuel |
 | **Total** | **40** | | | |
 
 - **Note finale du cours** : labs 30 %, mini-projet 40 %, examen 30 %.
 - **Mini-projet ≥ 8/20 obligatoire** (soit 16/40), sans compensation possible. Présence
   obligatoire à la soutenance.
-- Les blocs « socle » et « livrables écrits » sont communs au binôme ; l'historique Git et le
-  journal permettent de les individualiser si un membre n'a visiblement pas contribué.
+- En option A, les critères communs peuvent être individualisés grâce à l'historique Git et au
+  journal si un membre n'a visiblement pas contribué.
 
-## Livrables écrits
+## Les livrables
 
-Tous sont dans le repo, au tag `final`.
+Chaque binôme remet **quatre livrables** au tag `final`, 48 h avant la soutenance : le **repo
+GitHub**, le **projet déployé**, le **rapport numérique** et le **poster**. Les deux QR codes du
+poster relient le papier au projet en ligne et à son code.
 
-| Livrable | Emplacement | Gabarit |
+| Livrable | Format et emplacement | Contenu attendu |
+|---|---|---|
+| Repo GitHub | Public, ou partagé avec l'enseignant ; tag `final` | Code du socle et des extensions, README, dataset card, model card, journal, ADR |
+| Projet déployé | URL publique HTTPS chez un fournisseur cloud, donnée dans le README | L'API de scoring en ligne, essayable depuis `/docs` (voir « Déployer sur le cloud ») |
+| Rapport numérique | PDF de 10 pages maximum, `docs/rapport.pdf`, lien dans le README | Plan : `docs/rapport-technique.md` |
+| Poster | PDF au format A1 portrait, `docs/poster.pdf`, affiché le jour de la soutenance | Contenu et mise en page : `docs/poster.md` |
+
+En option B, le rapport, le poster et les QR codes sont les mêmes fichiers dans les deux repos.
+
+Les documents du repo, notés dans le critère « repo documenté » :
+
+| Document | Emplacement | Gabarit |
 |---|---|---|
 | README du projet | `README.md` (racine) | section suivante |
 | Dataset card | `docs/dataset-card.md` | pré-remplie pour German Credit |
 | Model card | `model-card/model-card.md` | Lab 8 |
 | ADR (3 minimum) | `docs/adr/NNNN-*.md` | `docs/adr/0000-modele.md` |
 | Journal de bord | `docs/journal.md` | gabarit fourni |
-| Rapport technique | `docs/rapport.pdf` (10 pages max) | plan : `docs/rapport-technique.md` |
-| Slides | `docs/slides.pdf` (ou `.pptx`, `.odp`, `.html`) | libre |
-| Vidéo de démo (3 min) | lien dans la section « Démo » du README (ou `docs/demo.mp4`) | libre |
+| QR codes du poster | `docs/qr-projet.png`, `docs/qr-repo.png` (option B : aussi `docs/qr-repo-2.png`) | commande dans « Poster » |
 
 ### README du projet
 
 Le README racine est, au départ, celui du cours : **remplacez-le par celui de votre projet au
-plus tard au jalon J1** (les énoncés restent dans `labs/`). Un lecteur doit pouvoir démarrer
-votre système en cinq commandes, sans lire 200 lignes d'histoire. Le pré-contrôle cherche ces
-titres de section et les commandes `make up` et `dvc repro` :
+plus tard au jalon J1** (les énoncés restent dans `labs/`), en gardant la section
+« Organisation du binôme » ajoutée à J0. Un lecteur doit pouvoir démarrer votre système en cinq
+commandes, sans lire 200 lignes d'histoire. Le pré-contrôle cherche ces titres de section, les
+commandes `make up` et `dvc repro` et, au rendu final, une URL `https://` dans la section
+« Projet en ligne » :
 
 ```markdown
 # Scoring de crédit — binôme Alice Martin & Bob Durand
 
 Une phrase : quel problème, pour qui, quel résultat.
+
+## Organisation du binôme
+    Option A (repo commun) : https://github.com/PROPRIETAIRE/mlops-cours-2026
+    (option B : « Option B (deux repos) », les deux liens, et lequel est le repo de référence)
+
+## Projet en ligne
+    https://… (URL du projet déployé), fournisseur, service utilisé
+    Procédure de déploiement (commandes ou étapes de la console), mise à jour du modèle
 
 ## Démarrage rapide
     git clone git@github.com:PROPRIETAIRE/mlops-cours-2026.git && cd mlops-cours-2026
@@ -908,7 +1051,7 @@ Une phrase : quel problème, pour qui, quel résultat.
 ## Modèle et résultats (métrique primaire, coût métier, lien vers la model card)
 ## Extensions         (qui a fait quoi, lien vers chaque PR ext/*)
 ## Équipe             (noms, pseudos GitHub)
-## Démo               (lien de la vidéo de 3 minutes)
+## Livrables          (liens vers docs/rapport.pdf et docs/poster.pdf)
 ```
 
 ### Dataset card
@@ -994,7 +1137,7 @@ Une entrée par séance, la plus récente en bas, titre au format exact
 `## S<n> — AAAA-MM-JJ — <sujet>` (le pré-contrôle compte les entrées datées) :
 
 ```markdown
-## S5 — 2026-10-13 — Lab 3 : validation
+## S4 — 2026-10-27 — Lab 3 : validation
 
 - **Pilote / copilote :** @bob / @alice
 - **Fait :** suite GX sur les 20 variables, gate branchée dans le pipeline (#18).
@@ -1003,19 +1146,20 @@ Une entrée par séance, la plus récente en bas, titre au format exact
 - **Prochaine étape :** Alice pilote le Lab 4 ; relire la PR #18.
 ```
 
-### Rapport technique
+### Rapport numérique
 
-**10 pages maximum** hors page de garde et annexes, en PDF (`docs/rapport.pdf`). Le jury le lit
+**10 pages maximum** hors page de garde et annexes, en PDF (`docs/rapport.pdf`), lu à l'écran :
+les liens sont cliquables (projet déployé, repo, PR, runs, tableaux de bord). Le jury le lit
 **avant** la soutenance : il y cherche vos choix et vos chiffres, pas le récit des labs. Plan
 détaillé dans `docs/rapport-technique.md` :
 
 | Section | Pages |
 |---|---|
-| 1. Résumé exécutif | ½ |
+| 1. Résumé exécutif (avec l'URL du projet déployé et le lien du repo) | ½ |
 | 2. Cas d'usage et données | 1 |
-| 3. Architecture du socle | 1 ½ |
-| 4. Modèle et validation | 1 |
-| 5. Mise en service et SLO | 1 |
+| 3. Architecture du socle | 1 |
+| 4. Modèle, validation et résultats (métriques, coût métier) | 1 |
+| 5. Mise en service : KServe et déploiement cloud | 1 ½ |
 | 6. Exploitation : CI/CD, monitoring, incidents | 1 |
 | 7. Gouvernance (équité, explicabilité, sécurité, AI Act) | 1 |
 | 8. Extension du membre 1 | 1 |
@@ -1025,11 +1169,40 @@ détaillé dans `docs/rapport-technique.md` :
 La section 10 est souvent la plus appréciée : les choix faits « faute de mieux », les problèmes
 rencontrés et la façon dont vous les avez contournés.
 
+### Poster
+
+Un **PDF au format A1 portrait** (594 × 841 mm), `docs/poster.pdf`, affiché le jour de la
+soutenance : c'est le support de vos 5 minutes communes. Il se lit à 1,5 m : peu de texte, de
+grands schémas, des chiffres. Contenu attendu, détaillé dans `docs/poster.md` :
+
+- titre, noms du binôme, groupe ;
+- le problème métier et les données (une phrase chacun, la matrice de coûts) ;
+- le schéma d'architecture de bout en bout, du dataset au projet déployé ;
+- les résultats : métrique primaire, coût métier au seuil retenu, équité par groupe ;
+- le monitoring : une capture du tableau de bord, les alertes ;
+- les deux extensions, chacune en un encadré ;
+- les **QR codes**, chacun avec sa légende et l'URL en clair dessous.
+
+Le premier QR code mène au projet déployé (page `/docs` de l'API), le second au repo GitHub ; en
+option B, un troisième mène au second repo. Pour les générer (un fichier PNG par URL, sans rien
+installer) :
+
+```bash
+uvx --from "qrcode[pil]" qr "https://votre-projet-deploye/docs" > docs/qr-projet.png
+uvx --from "qrcode[pil]" qr "https://github.com/votre-user/mlops-cours-2026" > docs/qr-repo.png
+```
+
+Sur le poster, donnez à chaque QR code **au moins 5 cm de côté**, et testez-les avec deux
+téléphones différents, hors du Wi-Fi de l'école, avant le tag `final`. Outil de mise en page
+libre (PowerPoint, LibreOffice Impress, Inkscape, LaTeX, Figma, Canva…), pourvu que le PDF soit
+au bon format.
+
 ## Conseils
 
 ### Ce qui démarque un excellent projet
 
-1. La démo marche du premier coup sur un poste qui n'a jamais vu votre code.
+1. La démo marche du premier coup sur un poste qui n'a jamais vu votre code, et le QR code du
+   poster ouvre une API qui répond sur le téléphone du jury.
 2. Chaque choix technique est justifié (ADR), y compris les compromis.
 3. Les tests et les gates permettent de toucher au code sans peur.
 4. Le tableau de bord Grafana est lisible : un non-spécialiste comprend en 10 secondes si le
@@ -1060,6 +1233,11 @@ rencontrés et la façon dont vous les avez contournés.
 > - **La démo jamais répétée** : répétez au moins trois fois, dont une sur un poste neuf.
 > - **L'extension fusionnée la veille** : sans relecture, sans tests, elle casse souvent le
 >   socle (et les checks).
+> - **Le déploiement cloud de la dernière nuit** : ouvrez le compte à J1, déployez dès que la CI
+>   du Lab 6 publie une image ; une validation de compte ou un quota peut prendre plusieurs
+>   jours.
+> - **Les crédits cloud épuisés** : pas d'alerte de budget, un cluster managé oublié tout un
+>   week-end, et l'URL du poster ne répond plus le jour J.
 
 > [!TIP]
 > **Le bon réflexe**
@@ -1072,18 +1250,28 @@ rencontrés et la façon dont vous les avez contournés.
 
 **Peut-on travailler seul ou à trois ?**
 Le binôme est la règle. Un étudiant seul (effectif impair) est possible avec l'accord de
-l'enseignant : même socle, une seule extension (`EXT_MIN=1` pour le pré-contrôle). Pas de
-trinôme.
+l'enseignant : même socle, une seule extension, un déploiement cloud, un rapport et un poster
+(pré-contrôle avec `EXT_MIN=1 AUTEURS_MIN=1`). Pas de trinôme.
 
-**Mon partenaire abandonne en cours de semestre. Que se passe-t-il ?**
-Prévenez l'enseignant tout de suite. Vous gardez le repo et poursuivez seul (une extension) ;
-le journal et l'historique Git documentent qui a fait quoi.
+**Repo commun ou deux repos : comment choisir ?**
+Le repo commun (option A) convient si vous codez volontiers à deux et avez des créneaux communs.
+Deux repos (option B) conviennent si chacun veut maîtriser tout le socle ou si vos emplois du
+temps diffèrent. Le choix se déclare au jalon J0 et ne change plus.
+
+**Avec deux repos, peut-on avoir deux datasets différents ?**
+Non. Le binôme partage le même cas d'usage et le même `dataset.yaml` : c'est ce qui rend le
+rapport, le poster et le déploiement communs.
+
+**Mon partenaire abandonne en cours de route. Que se passe-t-il ?**
+Prévenez l'enseignant tout de suite. Vous gardez votre repo (le repo commun en option A) et
+poursuivez seul (une extension) ; le journal et l'historique Git documentent qui a fait quoi.
+Le déploiement, le rapport et le poster deviennent les vôtres.
 
 **Les deux membres peuvent-ils faire la même extension ?**
 Non. Deux extensions différentes, et au plus 3 binômes par extension et par groupe.
 
 **Puis-je changer d'extension après l'avoir déclarée ?**
-Oui jusqu'à la fin de S8, en mettant à jour votre issue (et sous réserve du quota). Au-delà,
+Oui jusqu'à la fin de S6, en mettant à jour votre issue (et sous réserve du quota). Au-delà,
 seulement avec l'accord de l'enseignant.
 
 **Notre dataset libre nous pose trop de problèmes. Peut-on revenir au credit scoring ?**
@@ -1118,10 +1306,25 @@ Non. L'évaluation porte sur le système MLOps, pas sur l'accuracy. Un modèle �
 un socle complet et un seuil justifié par le coût métier vaut bien plus qu'un modèle à 0,85
 sans infrastructure. Montrez que vous savez *pourquoi* il plafonne.
 
-**Peut-on utiliser un cloud public au lieu de kind ?**
-Le socle doit tourner sur kind (c'est ce que vérifient les checks, et ce qu'utilise le plan B).
-Une extension peut utiliser un service externe gratuit si elle reste reproductible et si une
-alternative locale est documentée.
+**Le cloud remplace-t-il kind ?**
+Non. Le socle tourne sur kind : c'est ce que vérifient les checks et ce qu'utilise le défi en
+direct. Le cloud héberge l'API publique du projet. Une extension peut utiliser un service
+externe gratuit si elle reste reproductible et si une alternative locale est documentée.
+
+**Faut-il déployer tout Kubernetes sur le cloud ?**
+Non. L'exigence minimale est l'API de scoring en ligne. Un cluster Kubernetes managé avec KServe
+est valorisé, mais plus cher : surveillez vos crédits.
+
+**Le déploiement cloud va-t-il nous coûter de l'argent ?**
+Pas si vous restez dans les crédits gratuits : une API de scoring consomme très peu. Créez une
+alerte de budget dès l'ouverture du compte et supprimez les ressources après l'évaluation.
+Azure for Students ne demande pas de carte bancaire.
+
+**Le déploiement cloud n'est pas enseigné : où trouver de l'aide ?**
+Dans la documentation du fournisseur (liens de la section « Déployer sur le cloud ») : l'image
+de votre CI est autonome, il s'agit de la faire tourner derrière une URL HTTPS. Signalez un
+blocage dès J1 (journal, point avec l'enseignant) : un compte bloqué ou un quota se règle
+rarement en une soirée.
 
 **Faut-il un GPU ?**
 Non, aucune extension n'en exige. L'extension `rag-projet` tourne sur CPU avec un petit modèle
@@ -1154,13 +1357,15 @@ premier échec et ne modifie rien. Il vérifie :
 |---|---|
 | Socle | `make check-m0` … `make check-m8` (selon le jalon), chacun avec son nombre d'items verts ; journaux complets dans `/tmp/mlops-precontrole/` |
 | Contrat de données | `dataset.yaml` valide (`load_config`), licence, source et attribut sensible déclarés ; données brutes conformes (colonnes, 1 000 à 100 000 lignes, moins de 50 Mo) ; avertissement si le nom de la cible est écrit en dur dans le code |
-| Dépôt et reproductibilité | `dvc.yaml`, `dvc.lock`, remote DVC par défaut ; aucun secret ni donnée brute dans Git ; sections du README et commandes `make up` / `dvc repro` ; au moins deux auteurs dans l'historique |
-| Livrables écrits | journal (entrées datées), ADR complets (hors `0000`), dataset card et model card sans `[À compléter]`, et au rendu final rapport PDF, slides, lien de la vidéo |
+| Dépôt et reproductibilité | `dvc.yaml`, `dvc.lock`, remote DVC par défaut ; aucun secret ni donnée brute dans Git ; sections du README (dont « Organisation du binôme » et « Projet en ligne ») et commandes `make up` / `dvc repro` ; au moins deux auteurs dans l'historique (un en option B) |
+| Livrables | journal (entrées datées), ADR complets (hors `0000`), dataset card et model card sans `[À compléter]` ; au rendu final, projet déployé (l'URL `https://` de la section « Projet en ligne » répond sur `/health`), rapport PDF (10 pages), poster PDF au format A1 et QR codes |
 | Jalons | tags `j0`, `j1`, `j2`, `final` présents et dans l'ordre ; avec `SOUTENANCE="AAAA-MM-JJ HH:MM"`, tag `final` posé au moins 48 h avant |
-| Extensions | branches `ext/<nom>` retrouvées dans l'historique de `main` (fusion ou squash dont le titre commence par `ext/<nom>`), auteurs, présence de tests et d'ADR ; au moins deux extensions ; avec `--gh`, PR approuvées par un autre compte que l'auteur |
+| Extensions | branches `ext/<nom>` retrouvées dans l'historique de `main` (fusion ou squash dont le titre commence par `ext/<nom>`), auteurs, présence de tests et d'ADR ; au moins deux extensions (une en option B) ; avec `--gh`, PR approuvées par un autre compte que l'auteur |
 
-Variables utiles : `JALON` (`j0`, `j1`, `j2`, `final`), `JOURNAL_MIN`, `EXT_MIN`,
-`AUTEURS_MIN`, `CHECK_TIMEOUT`, `SOUTENANCE`, `LOG_DIR`.
+Le pré-contrôle lit l'option du binôme dans la section « Organisation du binôme » du README
+(« Option B » : une extension et un auteur suffisent dans chaque repo). Variables utiles :
+`JALON` (`j0`, `j1`, `j2`, `final`), `ORGA` (`A` ou `B`, pour forcer l'option), `JOURNAL_MIN`,
+`EXT_MIN`, `AUTEURS_MIN`, `CHECK_TIMEOUT`, `SOUTENANCE`, `LOG_DIR`.
 
 > **Sortie attendue :** pour un rendu final complet, un récapitulatif entièrement vert :
 
@@ -1169,9 +1374,9 @@ Variables utiles : `JALON` (`j0`, `j1`, `j2`, `final`), `JOURNAL_MIN`, `EXT_MIN`
 ✅   9/9  Socle — make check-m* (labs 0, 1, 2, 3, 4, 5, 6, 7, 8)
 ✅   2/2  Contrat de données — dataset.yaml
 ✅   4/4  Dépôt et reproductibilité
-✅   7/7  Livrables écrits
+✅   8/8  Livrables
 ✅   4/4  Jalons — tags Git (j0, j1, j2, final)
 ✅   1/1  Extensions — branches ext/* fusionnées dans l'historique
 
-🎉 27/27 vérifications OK, 0 avertissement(s) — rendu « final » complet.
+🎉 28/28 vérifications OK, 0 avertissement(s) — rendu « final » complet.
 ```

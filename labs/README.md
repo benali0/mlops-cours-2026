@@ -16,7 +16,7 @@ Chaque lab ajoute une brique au **même repo** : le vôtre. À la fin du Lab 8, 
 | 7 | [Monitoring](m7-monitoring/README.md) | 3 h | Prometheus, Grafana, Loki, alertes, analyse du canary | `make check-m7` |
 | 8 | [Gouvernance & Responsible AI](m8-governance/README.md) | 3 h | équité, SHAP, model card, image durcie, External Secrets | `make check-m8` |
 | 9 | [LLMOps (RAG)](m9-llmops/README.md) | 2 h | projet `rag/` isolé : Qdrant, Ollama, Ragas, Phoenix | `make check-m9` |
-| 10 | [Mini-projet](m10-capstone/README.md) | S1 → S12 | extension personnelle, livrables, soutenance | `make check-m10` |
+| 10 | [Mini-projet](m10-capstone/README.md) | tout le cours | extension personnelle, livrables, soutenance | `make check-m10` |
 
 Une partie des énoncés longs se termine en autonomie : le syllabus (`docs/syllabus.md`)
 donne la répartition entre séance encadrée et travail personnel.

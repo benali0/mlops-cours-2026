@@ -1,13 +1,16 @@
 # Cours MLOps — repo du cours (2026)
 
-Repo de travail du cours **Machine Learning Operations** (36 h, cycle ingénieur informatique).
+Repo de travail du cours **Machine Learning Operations** (18 h : 9 séances de 2 h, cycle ingénieur
+informatique).
 Vous le copiez au Lab 0 et vous y travaillez **jusqu'à la soutenance** : chaque lab y ajoute
 une brique, et le résultat final est votre mini-projet.
 
 > [!NOTE]
-> **En binôme** : un seul membre crée le repo du binôme à partir de celui-ci (bouton
-> **Use this template** ou fork), puis ajoute son partenaire et l'enseignant comme
-> collaborateurs. L'autre membre clone ce repo. Détails : Lab 0, étape 3.
+> **En binôme**, deux organisations au choix : un repo commun (un membre le crée à partir de
+> celui-ci, bouton **Use this template** ou fork, l'autre le clone) ou deux repos coordonnés
+> (chacun crée le sien). Ajoutez votre partenaire et l'enseignant (`firaskhl`) comme
+> collaborateurs.
+> Détails : Lab 0, étape 3.
 
 ## Démarrage
 
@@ -44,8 +47,8 @@ Le reste (pipelines, API, manifests, monitoring…) est créé par vous, lab apr
 ## Le mini-projet en bref
 
 Socle vérifié par `make check-m0` … `make check-m8` + une **extension personnelle** par étudiant
-+ soutenance de 25 minutes avec **défi en direct**. Jalons : J0 (fin S3), J1 (fin S8),
-J2 (fin S11), tag `final` 48 h avant la soutenance. Tout est dans
++ soutenance de 25 minutes avec **défi en direct** (séance 9). Jalons : J0 (fin S3), extensions
+déclarées (fin S5), J1 (fin S7), J2 (fin S8), tag `final` 48 h avant la soutenance. Tout est dans
 [`labs/m10-capstone/README.md`](labs/m10-capstone/README.md).
 
 > [!TIP]
@@ -54,5 +57,5 @@ J2 (fin S11), tag `final` 48 h avant la soutenance. Tout est dans
 
 ## Signaler une erreur
 
-Ouvrez une *issue* sur le repo du cours (`ORG_COURS/mlops-cours-2026`) ; les corrections par
+Ouvrez une *issue* sur le repo du cours (`firaskhl/mlops-cours-2026`) ; les corrections par
 pull request sont bienvenues, en particulier pour le troubleshooting et les versions d'outils.

@@ -1,19 +1,21 @@
-# Rapport technique — plan à suivre
+# Rapport numérique — plan à suivre
 
 <!--
 Ce fichier est le PLAN du rapport. Rédigez le rapport où vous voulez (ce fichier, LaTeX,
 Typst, traitement de texte) mais rendez un PDF : docs/rapport.pdf, 10 pages maximum hors
-page de garde et annexes, présent au tag `final` (48 h avant la soutenance).
+page de garde et annexes, présent au tag `final` (48 h avant la soutenance). Il est lu à
+l'écran : rendez les liens cliquables (projet déployé, repo, PR, runs, tableaux de bord).
 Le jury lit le rapport AVANT la soutenance : il y cherche vos choix et vos chiffres, pas le
 récit des labs (les énoncés existent déjà). Les pages indiquées sont des ordres de grandeur.
 -->
 
 **Page de garde :** titre du projet, dataset, noms et pseudos GitHub des deux membres,
-extension de chacun, lien du repo, hash du commit du tag `final`.
+extension de chacun, option du binôme (A ou B), lien du ou des repos, **URL du projet déployé**,
+hash du commit du tag `final`.
 
 ## 1. Résumé exécutif (½ page)
 
-Le problème, la solution, trois chiffres clés (ex. ROC AUC et coût métier du champion, P95 de
+Avec l'URL du projet déployé et le lien du repo. Le problème, la solution, trois chiffres clés (ex. ROC AUC et coût métier du champion, P95 de
 latence, nombre de checks verts), ce que vous retenez. Un lecteur pressé doit tout comprendre
 en trois minutes.
 
@@ -24,25 +26,27 @@ Le dataset en cinq lignes (renvoyer à `docs/dataset-card.md` pour le détail), 
 coûts, les attributs sensibles. Si vous avez changé de dataset : pourquoi, et ce que
 l'adaptation a demandé (`dataset.yaml`, `src/download.py`, points d'attention par lab).
 
-## 3. Architecture du socle (1 page ½)
+## 3. Architecture du socle (1 page)
 
 Un diagramme de bout en bout : données (DVC, S3) → pipeline (KFP ou Airflow, gates de
 validation) → registre MLflow (`scoring-model@champion`) → image (`scoring-api`) → KServe →
 monitoring (Prometheus, Grafana, Evidently) → CI/CD (GitHub Actions, Argo CD) → retour vers le
-ré-entraînement. Pour chaque brique : ce qu'elle fait chez vous et le lien vers l'ADR qui
+ré-entraînement, et la branche vers le **projet déployé** chez le fournisseur cloud. Pour chaque brique : ce qu'elle fait chez vous et le lien vers l'ADR qui
 justifie un choix non imposé.
 
-## 4. Modèle et validation (1 page)
+## 4. Modèle, validation et résultats (1 page)
 
 Baseline vs modèle retenu ; métrique de promotion et seuil (`dataset.yaml` → `metrics`) ;
 choix du seuil de décision au regard du coût métier ; résultats globaux **et** par sous-groupe ;
 ce que bloquent les gates (données invalides, drift, performance). Toujours un chiffre avec
 son contexte : « ROC AUC 0,80 (baseline 0,76, run MLflow `…`) », jamais « accuracy 0,89 ».
 
-## 5. Mise en service et SLO (1 page)
+## 5. Mise en service : KServe et déploiement cloud (1 page ½)
 
 InferenceService, ressources, autoscaling, stratégie canary ; benchmark (P50 / P95 / P99 à
 plusieurs niveaux de charge) ; SLO retenus et respect mesuré ; taille et scan de l'image.
+Déploiement cloud : fournisseur et service choisis (et pourquoi, dans un ADR), procédure,
+mise à jour du modèle servi, coût observé et alerte de budget, différences avec le cluster kind.
 
 ## 6. Exploitation : CI/CD, monitoring, incidents (1 page)
 

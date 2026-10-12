@@ -19,8 +19,10 @@
 # Variables facultatives :
 #   CHECK_TIMEOUT=900     délai maximal (s) par « make check-mX »
 #   JOURNAL_MIN=N         nombre minimal d'entrées datées du journal (défaut selon le jalon)
-#   EXT_MIN=2             nombre d'extensions fusionnées attendues (1 si étudiant seul)
-#   AUTEURS_MIN=2         nombre minimal d'auteurs distincts dans l'historique
+#   ORGA=A|B              organisation du binôme (défaut : lue dans la section
+#                         « Organisation du binôme » du README ; A si absente)
+#   EXT_MIN=2             nombre d'extensions fusionnées attendues (1 en option B ou seul)
+#   AUTEURS_MIN=2         nombre minimal d'auteurs distincts dans l'historique (1 en option B)
 #   SOUTENANCE="2026-12-15 08:00"   vérifie que le tag final précède la soutenance de 48 h
 #   LOG_DIR=…             dossier des journaux des checks (défaut /tmp/mlops-precontrole/…)
 #
@@ -34,7 +36,7 @@ cd "$(dirname "$0")/../.." || exit 1
 JALON=${JALON:-final}
 AVEC_CLUSTER=1
 AVEC_GH=0
-usage() { sed -n '4,28p' "$SELF" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '4,30p' "$SELF" | sed 's/^# \{0,1\}//'; }
 while [ $# -gt 0 ]; do
   case "$1" in
     --jalon)
@@ -59,8 +61,21 @@ case "$JALON" in
   *) echo "Jalon inconnu : '$JALON' (j0, j1, j2 ou final)"; exit 64 ;;
 esac
 JOURNAL_MIN=${JOURNAL_MIN:-$JOURNAL_DEF}
-EXT_MIN=${EXT_MIN:-2}
-AUTEURS_MIN=${AUTEURS_MIN:-2}
+# Option du binôme : A (repo commun) ou B (deux repos coordonnés), lue dans le README
+if [ -z "${ORGA:-}" ]; then
+  ORGA=A
+  if [ -f README.md ] &&
+    awk '/^#{1,3} /{in_s = (tolower($0) ~ /organisation/)} in_s' README.md | grep -qiE 'option +B'; then
+    ORGA=B
+  fi
+fi
+case "$ORGA" in
+  A) EXT_DEF=2; AUTEURS_DEF=2 ;;
+  B) EXT_DEF=1; AUTEURS_DEF=1 ;;
+  *) echo "ORGA inconnue : '$ORGA' (A ou B)"; exit 64 ;;
+esac
+EXT_MIN=${EXT_MIN:-$EXT_DEF}
+AUTEURS_MIN=${AUTEURS_MIN:-$AUTEURS_DEF}
 CHECK_TIMEOUT=${CHECK_TIMEOUT:-900}
 LOG_DIR=${LOG_DIR:-/tmp/mlops-precontrole/$(basename "$PWD")-$(date +%Y%m%d-%H%M%S)}
 mkdir -p "$LOG_DIR"
@@ -139,7 +154,7 @@ content_lines() { grep -v '^[[:space:]]*$' "$1" | grep -vc '^[[:space:]]*<!--.*-
 placeholders() { grep -c '\[À compléter' "$1"; }
 
 # =============================================================================
-echo "Pré-contrôle du mini-projet — jalon « ${JALON} » — $(basename "$PWD")"
+echo "Pré-contrôle du mini-projet — jalon « ${JALON} » — option ${ORGA} — $(basename "$PWD")"
 echo "Commit : $(git rev-parse --short HEAD 2>/dev/null || echo '?')" \
   "($(git log -1 --format=%cd --date=format:'%Y-%m-%d %H:%M' 2>/dev/null || echo '?'))" \
   " · journaux : ${LOG_DIR}"
@@ -302,25 +317,34 @@ check "Aucun secret ni donnée brute dans Git (.env, .dvc/config.local, ${DS_RAW
   "git rm --cached <fichier> ; ajouter au .gitignore ; changer le secret exposé" no_secrets
 readme_ok() {
   [ -f README.md ] || { echo "README.md absent"; return 1; }
-  local missing="" spec name re
-  for spec in \
-    "Démarrage rapide|d(é|e)marrage|quick ?start" \
-    "Cas d'usage|cas d.usage|contexte" \
-    "Architecture|architecture" \
-    "Données|donn(é|e)es|dataset" \
-    "Modèle et résultats|mod(è|e)le|r(é|e)sultats" \
-    "Extensions|extension" \
-    "Équipe|(É|é|E|e)quipe|bin(ô|o)me|auteur" \
-    "Démo|d(é|e)mo|vid(é|e)o"; do
+  local missing="" spec name re specs
+  # J0 : seule la section « Organisation du binôme » est exigée (README du cours conservé)
+  specs="Organisation du binôme|organisation"
+  if [ "$JALON" != j0 ]; then
+    specs="$specs
+Démarrage rapide|d(é|e)marrage|quick ?start
+Cas d'usage|cas d.usage|contexte
+Architecture|architecture
+Données|donn(é|e)es|dataset
+Modèle et résultats|mod(è|e)le|r(é|e)sultats
+Extensions|extension
+Équipe|(É|é|E|e)quipe|bin(ô|o)me|auteur
+Projet en ligne|projet en ligne|d(é|e)ploi
+Livrables|livrable"
+  fi
+  while IFS= read -r spec; do
     name=${spec%%|*}
     re=${spec#*|}
     grep -qiE "^#{1,3} .*(${re})" README.md || missing="$missing, $name"
-  done
-  grep -q 'make up' README.md || missing="$missing, commande « make up »"
-  grep -q 'dvc repro' README.md || missing="$missing, commande « dvc repro »"
+  done <<<"$specs"
+  grep -qiE 'option +[AB]' README.md || missing="$missing, option A ou B déclarée"
+  if [ "$JALON" != j0 ]; then
+    grep -q 'make up' README.md || missing="$missing, commande « make up »"
+    grep -q 'dvc repro' README.md || missing="$missing, commande « dvc repro »"
+  fi
   [ -z "$missing" ] || { echo "manque : ${missing#, }"; return 1; }
 }
-check "README du projet : sections et démarrage rapide (make up, dvc repro)" \
+check "README du projet : sections attendues au jalon ${JALON}" \
   "voir labs/m10-capstone/README.md, « README du projet »" readme_ok
 authors=$(git log --format='%aN <%aE>' HEAD 2>/dev/null | sort | uniq -c | sort -rn)
 authors_ok() {
@@ -404,24 +428,37 @@ if [ "$JALON" = final ]; then
       [ "${pages:-0}" -le 14 ] || return 1
     fi
   }
-  check "Rapport technique docs/rapport.pdf" "voir docs/rapport-technique.md" rapport_ok
-  slides_ok() {
-    local f
-    for f in docs/slides.pdf docs/slides.pptx docs/slides.html docs/slides.odp; do
-      [ -f "$f" ] && { echo "$f"; return 0; }
-    done
-    return 1
+  check "Rapport numérique docs/rapport.pdf" "voir docs/rapport-technique.md" rapport_ok
+  poster_ok() {
+    [ -f docs/poster.pdf ] || { echo "docs/poster.pdf absent"; return 1; }
+    local f missing="" size
+    for f in docs/qr-projet.png docs/qr-repo.png; do [ -f "$f" ] || missing="$missing $f"; done
+    [ -z "$missing" ] || { echo "QR codes absents :$missing"; return 1; }
+    if command -v pdfinfo >/dev/null 2>&1; then
+      # A1 portrait : 594 × 841 mm, soit environ 1684 × 2384 points (tolérance 3 %)
+      size=$(pdfinfo docs/poster.pdf 2>/dev/null | awk '/^Page size:/{print $3, $5}')
+      echo "format : ${size:-?} pt (A1 portrait ≈ 1684 x 2384)"
+      echo "$size" | awk '{ok = ($1 > 1633 && $1 < 1735 && $2 > 2312 && $2 < 2456); exit !ok}' ||
+        return 1
+    fi
   }
-  check "Slides de soutenance (docs/slides.pdf ou .pptx/.html/.odp)" \
-    "commiter les slides avant le tag final" slides_ok
-  video_ok() {
-    local f
-    for f in docs/demo.mp4 docs/demo.webm; do [ -f "$f" ] && { echo "$f"; return 0; }; done
-    grep -iE '(vid(é|e)o|d(é|e)mo).*https?://|https?://.*(vid(é|e)o|d(é|e)mo|youtu|peertube|vimeo)' \
-      README.md 2>/dev/null | head -1 | cut -c1-100 | grep .
+  check "Poster A1 (docs/poster.pdf) et ses deux QR codes" \
+    "voir docs/poster.md ; QR codes dans docs/qr-projet.png et docs/qr-repo.png" poster_ok
+  deploy_ok() {
+    # URL https dans la section « Projet en ligne » du README (jusqu'au titre suivant)
+    local url
+    url=$(awk '/^#{1,3} /{in_s = (tolower($0) ~ /projet en ligne/)} in_s' README.md 2>/dev/null |
+      grep -oE 'https://[^ )>`]+' | head -1)
+    [ -n "$url" ] || { echo "aucune URL https:// dans la section « Projet en ligne »"; return 1; }
+    url=${url%/}
+    url=${url%/docs}
+    echo "$url"
+    if command -v curl >/dev/null 2>&1; then
+      curl -fsS --max-time 30 "$url/health" | cut -c1-120 || return 1
+    fi
   }
-  check "Vidéo de démo (3 min) : lien dans le README ou docs/demo.mp4" \
-    "ajouter le lien dans la section Démo du README" video_ok
+  check "Projet déployé : l'URL https de « Projet en ligne » répond sur /health" \
+    "déployer l'API (voir « Déployer sur le cloud ») et donner l'URL dans le README" deploy_ok
 fi
 
 # --- 5. Jalons : tags Git -----------------------------------------------------

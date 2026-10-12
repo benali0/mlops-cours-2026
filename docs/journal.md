@@ -16,7 +16,7 @@ Mode d'emploi (à garder en tête du fichier) :
 **Binôme :** [À compléter : @pseudo-github-1 (Prénom Nom), @pseudo-github-2 (Prénom Nom)]
 **Repo :** [À compléter : https://github.com/VOTRE_USER/mlops-cours-2026]
 **Dataset :** [À compléter : german-credit (fil rouge) ou nom du dataset validé + lien de l'issue]
-**Extensions :** [À compléter à la S8 : @pseudo-1 → ext/<nom> · @pseudo-2 → ext/<nom>]
+**Extensions :** [À compléter au plus tard en fin de S5 : @pseudo-1 → ext/<nom> · @pseudo-2 → ext/<nom>]
 
 ## S0 — AAAA-MM-JJ — Exemple d'entrée (à supprimer)
 

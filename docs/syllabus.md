@@ -2,17 +2,17 @@
 doc_type: syllabus
 cover_kicker: "COURS MLOps"
 title: "Machine Learning Operations"
-subtitle: "Syllabus, plan de cours et labs — 36 heures"
+subtitle: "Syllabus, plan de cours et labs — 18 heures"
 cover_fields:
   - ["Public", "Cycle Ingénieur Informatique — 3e année"]
-  - ["Volume", "36 heures · 11 modules · 14h cours + 22h labs"]
-  - ["Prérequis", "ML, DL, Docker, Kubernetes, Cloud, DevOps"]
+  - ["Volume", "18 heures · 9 séances de 2 h · ~6 h de cours, ~10 h de labs encadrés, 2 h de soutenances"]
+  - ["Prérequis", "Bases de ML et de Python ; Docker, Kubernetes et outils DevOps introduits au Lab 0"]
   - ["Pédagogie", "Ateliers, labs guidés, mini-projet en binôme construit lab après lab"]
   - ["Cas d'usage", "Credit scoring (German Credit) ou dataset libre validé"]
   - ["Évaluation", "Labs (30 %) · Mini-projet (40 %) · Examen final (30 %)"]
   - ["Stack", "Kubernetes · SeaweedFS · MLflow · DVC · Kubeflow · KServe · Argo CD · Prometheus"]
 running_title: "Cours MLOps — Syllabus & Index Global"
-footer_left: "Cycle Ingénieur Informatique — 36h"
+footer_left: "Cycle Ingénieur Informatique — 18h"
 cover_footer_title: "Document maître du cours"
 cover_footer_text: "Version 2.0 · octobre 2026 · À utiliser avec les supports par module (PPTX + labs PDF)"
 ---
@@ -25,8 +25,9 @@ plateforme ML industrialisée.*
 ## Positionnement
 
 Ce cours s'adresse à des élèves ingénieurs de cycle informatique ayant déjà suivi des
-enseignements en Machine Learning, Deep Learning, Cloud, Kubernetes, Docker et DevOps. Il ne
-reprend donc pas les bases de ces disciplines — il se concentre sur ce qui les relie :
+enseignements en Machine Learning et en Python. Aucune expérience de Docker, Kubernetes ou des
+outils DevOps n'est requise : le Lab 0 en présente l'essentiel, schémas à l'appui. Le cours ne
+reprend pas la théorie du Machine Learning — il se concentre sur ce qui relie ces disciplines :
 l'ingénierie système des applications de Machine Learning en production, communément appelée
 « MLOps ». L'objectif n'est pas de former des Data Scientists supplémentaires, mais des
 ingénieurs capables de rendre opérationnels, fiables et maintenables les modèles produits par
@@ -35,7 +36,7 @@ les Data Scientists.
 ## Philosophie pédagogique
 
 Trois partis pris structurent ce cours. **Premièrement**, le ratio labs/cours est
-volontairement élevé : 22h de labs pour 14h de cours magistraux, car les concepts MLOps ne se
+volontairement élevé : environ 10 h de labs encadrés pour 6 h de cours, car les concepts MLOps ne se
 retiennent qu'au contact des outils. **Deuxièmement**, l'ensemble des labs s'articule autour
 d'une même stack Open Source de référence (Kubernetes, SeaweedFS, MLflow, DVC, Kubeflow,
 KServe, Argo CD, Prometheus, Evidently) et d'un même cas d'usage, plutôt que de multiplier les
@@ -83,14 +84,15 @@ réécrire `dataset.yaml` et `src/download.py`, rien d'autre.
 Le cours est livré sous la forme d'un repo GitHub modèle, `mlops-cours-2026` : infrastructure
 (`infra/`, pilotée par un `Makefile`), énoncés des labs (`labs/mX-*/README.md`), fichiers de
 départ, vérifications automatiques et gabarits du mini-projet. Au Lab 0, chaque binôme en crée
-**une** copie et y travaille jusqu'à la soutenance : chaque lab ajoute une brique au même
+**une** copie commune (option A) ou chaque membre crée la sienne (option B, deux repos
+coordonnés), et y travaille jusqu'à la soutenance : chaque lab ajoute une brique au même
 système. Chaque membre fait tourner le système complet sur son propre cluster kind, le travail
 se fait par branches (`lab/mX-…` pour un lab, `ext/<nom>` pour une extension) et pull requests
 relues par le partenaire, en alternant pilote et copilote d'un lab à l'autre ; chaque énoncé se
 termine par les commandes qui remettent à niveau le cluster du membre qui n'a pas piloté. Un
 poste à **16 Go de RAM** est requis à partir du Lab 2 (8 Go suffisent pour les Labs 0 et 1) :
 un étudiant moins équipé le signale dès la première séance, pour qu'une solution de repli
-(poste de l'école, machine virtuelle, poste du partenaire) soit en place avant la semaine 4.
+(poste de l'école, machine virtuelle, poste du partenaire) soit en place avant la séance 3.
 
 Chaque lab se termine par `make check-mX`, qui vérifie l'état attendu item par item : l'étudiant
 sait où il en est, et les mêmes vérifications servent à noter le socle du mini-projet. Après
@@ -115,7 +117,7 @@ retard peut remettre son socle à niveau, de façon traçable.
 > **Ce cours ne couvre pas**
 >
 > - La théorie des modèles ML / DL — elle est supposée acquise (cours antérieurs)
-> - L'administration avancée de Kubernetes — bases supposées acquises
+> - L'administration avancée de Kubernetes — le cours n'utilise que les bases, présentées au Lab 0
 > - Le développement Python avancé — niveau de base requis
 > - Les fondamentaux DevOps (Git, CI, conteneurs) — supposés acquis
 > - L'entraînement sur GPU et le fine-tuning de LLM — présentés en cours, aucun GPU n'est requis
@@ -140,7 +142,8 @@ mini-projet.
 La version 2.0 reconstruit l'ensemble des labs à partir des supports de la version 1.0 : le
 code annoncé est désormais fourni, vérifié et rejoué chaque semaine, et les briques devenues
 obsolètes en 2026 ont été remplacées. Les objectifs, les volumes horaires, la progression des
-modules et les compétences visées sont conservés.
+modules et les compétences visées sont conservés ; le volume horaire est ramené à 18 heures
+(9 séances de 2 h) : chaque lab commence en séance et se termine en autonomie.
 
 | Domaine | Version 1.0 | Version 2.0 | Pourquoi |
 |---|---|---|---|
@@ -165,78 +168,45 @@ modules et les compétences visées sont conservés.
 
 # Table des matières synoptique
 
-*Vue d'ensemble des 11 modules sur 36 heures.*
+*Vue d'ensemble des 11 modules sur 18 heures (9 séances de 2 h).*
 
-| # | Titre du module | Thème | Volume | Cours / Lab | Énoncé du lab | Noté sur |
+| # | Titre du module | Thème | Séance | En séance (cours / lab) | Énoncé du lab | Noté sur |
 |---|---|---|---|---|---|---|
-| 0 | Introduction au MLOps | Fondamentaux | 2h | 1h / 1h | 1 h (+ 1 h de préparation avant la séance) | non noté |
-| 1 | Versioning données, code & expériences | Reproductibilité | 4h | 2h / 2h | 2 h | 20 |
-| 2 | Pipelines ML & orchestration | Automatisation | 5h | 2h / 3h | 3 h | 20 |
-| 3 | Validation données & modèle | Qualité | 3h | 1h / 2h | 2 h | 20 |
-| 4 | Conteneurisation & packaging des modèles | Packaging | 3h | 1h / 2h | 2 h | 20 |
-| 5 | Serving & inférence à l'échelle | Déploiement | 5h | 2h / 3h | 3 h | 20 |
-| 6 | CI/CD pour le ML (CT inclus) | Automatisation | 4h | 1h / 3h | 3 h | 20 |
-| 7 | Monitoring & observabilité ML | Opération | 4h | 2h / 2h | 3 h | 20 |
-| 8 | Sécurité, gouvernance & Responsible AI | Gouvernance | 2h | 1h / 1h | 3 h | 10 |
-| 9 | LLMOps & Edge MLOps | Spécialisation | 2h | 1h / 1h | 2 h | 10 |
-| 10 | Mini-projet & soutenances | Intégration | 2h | 0h / 2h | travail continu S1-S12 | 40 |
+| 0 | Introduction au MLOps | Fondamentaux | S1 | 50 min / 1 h 10 | 1 h 10 (+ préparation conseillée avant la séance) | non noté |
+| 1 | Versioning données, code & expériences | Reproductibilité | S2 | 45 min / 1 h 15 | 2 h | 20 |
+| 2 | Pipelines ML & orchestration | Automatisation | S3 | 45 min / 1 h 15 | 3 h | 20 |
+| 3 | Validation données & modèle | Qualité | S4 | 45 min / 1 h 15 | 2 h | 20 |
+| 4 | Conteneurisation & packaging des modèles | Packaging | S5 | 45 min / 1 h 15 | 2 h | 20 |
+| 5 | Serving & inférence à l'échelle | Déploiement | S6 | 45 min / 1 h 15 | 3 h | 20 |
+| 6 | CI/CD pour le ML (CT inclus) | Automatisation | S7 | 45 min / 1 h 15 | 3 h | 20 |
+| 7 | Monitoring & observabilité ML | Opération | S8 | 30 min / 1 h 15 | 3 h | 20 |
+| 8 | Sécurité, gouvernance & Responsible AI | Gouvernance | S8 | 15 min / en autonomie | 3 h | 10 |
+| 9 | LLMOps & Edge MLOps | Spécialisation | — | en autonomie (optionnel) | 2 h | non compté |
+| 10 | Mini-projet & soutenances | Intégration | S9 | 0 / 2 h de soutenances | travail continu S1-S9 | 40 |
 
 ## Répartition du volume horaire
 
 | Catégorie | Heures | Part |
 |---|---|---|
-| Cours magistraux | 14 h | 39 % |
-| Labs guidés | 22 h | 61 % |
-| **Total** | **36 h** | **100 %** |
+| Cours | 6 h 05 | 34 % |
+| Labs encadrés | 9 h 55 | 55 % |
+| Soutenances du mini-projet | 2 h | 11 % |
+| **Total** | **18 h** | **100 %** |
 
 > [!NOTE]
-> **Pourquoi 22h de labs pour 14h de cours ?**
+> **Pourquoi plus de pratique que de cours ?**
 > Le MLOps est par nature une discipline d'ingénierie système : elle ne se réduit pas à des
 > concepts. On ne « comprend » pas véritablement une pipeline Kubeflow en la lisant sur une
 > slide ; on la comprend en la faisant casser, en l'orchestrant, et en déboguant les erreurs de
-> permissions. Les 61 % de volume consacrés aux labs reflètent cette réalité.
+> permissions. Chaque séance réserve donc environ deux tiers de son temps au lab.
 
 > [!WARNING]
-> **Trois énoncés dépassent leur séance**
-> Les énoncés des Labs 7, 8 et 9 sont écrits pour 3 h, 3 h et 2 h, alors que le volume encadré
-> leur réserve 2 h, 1 h et 1 h : environ 4 h de travail personnel s'ajoutent aux 22 h de labs.
-> La fin de ces labs (interprétation, rapport) se termine en autonomie avant la séance suivante,
-> et `make check-mX` permet à chacun de vérifier son état sans attendre l'enseignant. Le Lab 9
-> tourne entièrement sur le poste, sans cluster.
-
-# Objectifs généraux et compétences visées
-
-*Les six compétences ciblées par le cours, et leur travail dans chaque module.*
-
-## Compétences transversales (Learning Outcomes)
-
-À l'issue du cours, l'élève est capable de :
-
-| Code | Compétence |
-|---|---|
-| **C1** | Concevoir et mettre en œuvre un pipeline ML reproductible, de la donnée brute au modèle entraîné, en versionnant code, données et expériences. |
-| **C2** | Orchestrer l'ensemble du cycle de vie ML à l'aide d'outils de workflow (Kubeflow, Airflow) sur infrastructure Kubernetes. |
-| **C3** | Déployer des modèles ML en production selon différents patterns (online, batch, streaming, edge) en maîtrisant latence, throughput et coûts. |
-| **C4** | Mettre en place des pipelines CI/CD/CT pour les systèmes ML, incluant tests de données, tests de modèles et promotion automatique entre environnements. |
-| **C5** | Instrumenter, monitorer et maintenir des modèles en production : détection de drift, alerting, rollback, déploiement canary. |
-| **C6** | Appliquer les principes de sécurité, gouvernance, équité et explicabilité aux systèmes ML en tenant compte des contraintes réglementaires (RGPD, EU AI Act). |
-
-## Matrice compétences × modules
-
-Chaque compétence est travaillée dans plusieurs modules. Niveau : ● introduction ·
-●● approfondissement · ●●● maîtrise.
-
-| Compétence | M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9 | M10 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| **C1** | ● | ●●● | ●● | ●● | | | | | | | ●●● |
-| **C2** | ● | | ●●● | | | | ●● | | | | ●● |
-| **C3** | | | | | ● | ●●● | | | | ●● | ●● |
-| **C4** | | | ● | ●● | | | ●●● | | | | ●● |
-| **C5** | | | | | | ● | ●● | ●●● | | ● | ●●● |
-| **C6** | | | | | ● | | | | ●●● | ● | ● |
-
-Au Module 10, le niveau atteint dépend aussi de l'extension choisie par chaque étudiant (le
-catalogue couvre les six compétences) ; le défi en direct de la soutenance porte sur C5.
+> **Chaque lab se termine en autonomie**
+> Les énoncés des Labs 0 à 8 représentent environ 23 h de travail, pour un peu moins de 10 h de
+> lab encadré : comptez **1 h 30 à 2 h de travail personnel par semaine** pour finir chaque
+> lab avant la séance suivante. Le Lab 8 se fait entièrement en autonomie (la séance 8 lui
+> réserve un court cours) et le Lab 9 (LLMOps) est optionnel. `make check-mX` permet à chacun de
+> vérifier son état sans attendre l'enseignant.
 
 # Fiches des modules
 
@@ -249,7 +219,7 @@ on ne recrée jamais le cluster du Lab 0.
 
 | Module | Énoncé (repo du cours) | Étapes | Durée de l'énoncé | Vérification |
 |---|---|---|---|---|
-| M0 | `labs/m0-setup/` | 8 | 1 h en séance + 1 h avant | `make check-m0` |
+| M0 | `labs/m0-setup/` | 8 | 1 h 10 en séance + préparation | `make check-m0` |
 | M1 | `labs/m1-versioning/` | 10 | 2 h | `make check-m1` |
 | M2 | `labs/m2-pipelines/` | 9 | 3 h | `make check-m2` |
 | M3 | `labs/m3-validation/` | 7 | 2 h | `make check-m3` |
@@ -258,14 +228,14 @@ on ne recrée jamais le cluster du Lab 0.
 | M6 | `labs/m6-cicd/` | 9 | 3 h | `make check-m6` |
 | M7 | `labs/m7-monitoring/` | 10 | 3 h | `make check-m7` |
 | M8 | `labs/m8-governance/` | 9 | 3 h | `make check-m8` |
-| M9 | `labs/m9-llmops/` | 9 | 2 h | `make check-m9` |
-| M10 | `labs/m10-capstone/` | — | travail continu S1-S12 | `make check-m10` (pré-contrôle de rendu) |
+| M9 | `labs/m9-llmops/` | 9 | 2 h (optionnel) | `make check-m9` |
+| M10 | `labs/m10-capstone/` | — | travail continu S1-S9 | `make check-m10` (pré-contrôle de rendu) |
 
 ## Module 0 — Introduction au MLOps
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Fondamentaux | 2 h | 1h / 1h | ML, DL, Docker, K8s, DevOps ; poste à 16 Go de RAM (8 Go : Labs 0-1 seulement) |
+| Fondamentaux | 2 h (S1) | 50 min / 1 h 10 | Bases de ML et de Python ; poste à 16 Go de RAM (8 Go : Labs 0-1 seulement) |
 
 ### Objectifs pédagogiques
 
@@ -289,10 +259,10 @@ on ne recrée jamais le cluster du Lab 0.
 | Stack & toolchain du cours | Smoke tests MLflow et DVC (10 min) |
 | | Checklist de validation en 14 items + première pull request `lab/m0-setup` (10 min) ; 15 min de marge |
 
-**Lab :** `labs/m0-setup/` · 8 étapes · 1 h en séance, précédée d'environ 1 h de préparation
-(installations et téléchargements, environ 4 Go, à faire chez soi : trente postes qui
-téléchargent en même temps sur le réseau de la salle ne tiennent pas dans l'heure) ·
-vérification `make check-m0`.
+**Lab :** `labs/m0-setup/` · 8 étapes · 1 h 10 en séance ; la préparation (installations et
+téléchargements, environ 4 Go) se fait de préférence avant la séance, sinon elle se termine en
+autonomie avant la séance 2 · Windows : VM du cours (`infra/vagrant/`) · vérification
+`make check-m0`.
 
 ### Outils & technologies
 
@@ -314,7 +284,7 @@ Non noté — lab de setup obligatoire pour la suite du cours. La checklist vali
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Reproductibilité | 4 h | 2h / 2h | Lab 0 réussi (`make check-m0` vert) |
+| Reproductibilité | 2 h (S2) | 45 min / 1 h 15 | Lab 0 réussi (`make check-m0` vert) |
 
 ### Objectifs pédagogiques
 
@@ -365,7 +335,7 @@ modèle final (4 pts), propreté du code (4 pts). Remise : repo Git du binôme.
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Automatisation | 5 h | 2h / 3h | Labs 0 et 1 réussis |
+| Automatisation | 2 h (S3) | 45 min / 1 h 15 | Labs 0 et 1 réussis |
 
 ### Objectifs pédagogiques
 
@@ -412,7 +382,7 @@ comparatif (5 pts).
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Qualité | 3 h | 1h / 2h | Lab 2 réussi (pipeline KFP fonctionnel) |
+| Qualité | 2 h (S4) | 45 min / 1 h 15 | Lab 2 réussi (pipeline KFP fonctionnel) |
 
 ### Objectifs pédagogiques
 
@@ -459,7 +429,7 @@ de drift (4 pts), validation du modèle (3 pts), propreté du code (2 pts).
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Packaging | 3 h | 1h / 2h | Lab 1 réussi (`scoring-model@champion`) |
+| Packaging | 2 h (S5) | 45 min / 1 h 15 | Lab 1 réussi (`scoring-model@champion`) |
 
 ### Objectifs pédagogiques
 
@@ -504,7 +474,7 @@ Noté sur 20 — image fonctionnelle (6 pts), optimisation de la taille (4 pts),
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Déploiement | 5 h | 2h / 3h | Lab 4 réussi (image `scoring-api` dans le registry) |
+| Déploiement | 2 h (S6) | 45 min / 1 h 15 | Lab 4 réussi (image `scoring-api` dans le registry) |
 
 ### Objectifs pédagogiques
 
@@ -550,7 +520,7 @@ Noté sur 20 — déploiement fonctionnel (6 pts), autoscaling (4 pts), benchmar
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Automatisation | 4 h | 1h / 3h | Labs 2, 4 et 5 réussis (Lab 3 conseillé) |
+| Automatisation | 2 h (S7) | 45 min / 1 h 15 | Labs 2, 4 et 5 réussis (Lab 3 conseillé) |
 
 ### Objectifs pédagogiques
 
@@ -594,7 +564,7 @@ Noté sur 20 — CI (6 pts), CD (6 pts), CT (8 pts).
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Opération | 4 h | 2h / 2h | Labs 4, 5 et 6 réussis |
+| Opération | 1 h 45 (S8) | 30 min / 1 h 15 | Labs 4, 5 et 6 réussis |
 
 ### Objectifs pédagogiques
 
@@ -619,7 +589,7 @@ Noté sur 20 — CI (6 pts), CD (6 pts), CT (8 pts).
 | | Démo : drift → alerte → ré-entraînement (15 min) |
 | | Analyser un canary par les métriques : promouvoir ou annuler par Git (15 min) |
 
-**Lab :** `labs/m7-monitoring/` · 10 étapes · énoncé de 3 h pour 2 h de séance (fin en
+**Lab :** `labs/m7-monitoring/` · 10 étapes · énoncé de 3 h pour 1 h 15 de séance (fin en
 autonomie) · vérification `make check-m7`.
 
 ### Outils & technologies
@@ -642,7 +612,7 @@ continu (4 pts), alertes SLO (3 pts), canary analysé (2 pts), rapport et démo 
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Gouvernance | 2 h | 1h / 1h | Labs 4 et 5 réussis |
+| Gouvernance | 15 min (S8) | 15 min / lab en autonomie | Labs 4 et 5 réussis |
 
 ### Objectifs pédagogiques
 
@@ -667,8 +637,8 @@ continu (4 pts), alertes SLO (3 pts), canary analysé (2 pts), rapport et démo 
 | | ExternalSecret pour les identifiants S3 (15 min) |
 | | Rapport de conformité AI Act / RGPD (10 min) |
 
-**Lab :** `labs/m8-governance/` · 9 étapes · énoncé de 3 h pour 1 h de séance (fin en
-autonomie) · vérification `make check-m8`.
+**Lab :** `labs/m8-governance/` · 9 étapes · énoncé de 3 h, entièrement en autonomie (la
+séance 8 lui consacre 15 min de cours) · vérification `make check-m8`.
 
 ### Outils & technologies
 
@@ -690,7 +660,7 @@ Model Card et rapport de conformité (2,5 pts).
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Spécialisation | 2 h | 1h / 1h | Python, Docker ; 16 Go de RAM (8 Go avec le modèle léger) |
+| Spécialisation | en autonomie (optionnel) | — / énoncé en autonomie | Python, Docker ; 16 Go de RAM (8 Go avec le modèle léger) |
 
 ### Objectifs pédagogiques
 
@@ -713,7 +683,7 @@ Model Card et rapport de conformité (2,5 pts).
 | | Prompt injection + guardrails d'entrée et de sortie (15 min) |
 | | Rapport final (10 min) |
 
-**Lab :** `labs/m9-llmops/` · 9 étapes · énoncé de 2 h pour 1 h de séance (fin en autonomie) ·
+**Lab :** `labs/m9-llmops/` · 9 étapes · énoncé de 2 h, optionnel et en autonomie ·
 vérification `make check-m9`. Tout tourne sur le poste, sans cluster ; le projet `rag/` a son
 propre environnement Python, séparé du socle.
 
@@ -730,22 +700,23 @@ Ollama (Qwen 3.5), vLLM (option GPU), Qdrant, LangChain, fastembed, Ragas, Phoen
 
 ### Évaluation du module
 
-Noté sur 10 — pipeline RAG (3 pts), évaluation Ragas (3 pts), observabilité (2 pts), sécurité
-(1 pt), rapport (1 pt). Le Lab 9 est noté comme les autres labs mais ne fait pas partie du socle
-du mini-projet : il sert de base à l'extension `rag-projet`.
+Module optionnel, non compté dans la note de labs. La grille de l'énoncé (pipeline RAG 3 pts,
+évaluation Ragas 3, observabilité 2, sécurité 1, rapport 1) sert d'auto-évaluation. Le Lab 9 ne
+fait pas partie du socle du mini-projet : il sert de base à l'extension `rag-projet`.
 
 ## Module 10 — Mini-projet & soutenances
 
 | Thème | Volume | Cours / Lab | Prérequis |
 |---|---|---|---|
-| Intégration | 2 h classe + travail continu S1-S12 | 0h / 2h + perso | Labs 0 à 8 (le socle) ; Lab 9 pour l'extension `rag-projet` |
+| Intégration | 2 h (S9) + travail continu S1-S9 | soutenances 2 h + perso | Labs 0 à 8 (le socle) ; Lab 9 pour l'extension `rag-projet` ; un compte chez un fournisseur cloud |
 
 ### Objectifs pédagogiques
 
 - Intégrer l'ensemble des briques MLOps sur un cas d'usage complet
 - Travailler en binôme : pilote / copilote alternés, PR relues, journal de bord, ADR
 - Étendre le socle par une extension personnelle, testée et documentée
-- Présenter une démonstration end-to-end devant un jury
+- Déployer l'API du socle chez un fournisseur cloud, en autonomie (non enseigné en séance)
+- Présenter une démonstration end-to-end devant un jury, avec un poster
 - Défendre des choix d'architecture et justifier les trade-offs
 - Diagnostiquer et corriger en direct un incident de production (données, drift, service,
   déploiement, modèle, secret)
@@ -755,9 +726,9 @@ du mini-projet : il sert de base à l'extension `rag-projet`.
 | Plan du cours magistral | Plan du lab guidé |
 |---|---|
 | Pas de cours magistral — suivi du projet à chaque séance | Socle = Labs 0 à 8 appliqués au cas d'usage, vérifiés par `make check-m0` … `make check-m8` |
-| Dataset libre validé avant le Lab 1 (S2), sinon credit scoring | Une extension par étudiant : catalogue de 16, niveaux ★ à ★★★, ou hors catalogue validée avant la fin de S8 |
-| Jalons taggés : J0 Setup (fin S3), J1 MVP (fin S8, extensions déclarées), J2 Production (fin S11), `final` 48 h avant la soutenance | Travail par branches `lab/…` et `ext/<nom>`, fusionnées par PR relue par le partenaire |
-| Préparation du défi : « jeu du chaos » hebdomadaire en binôme à partir de J1 | Soutenance de 25 min par binôme : démo du socle 5 min, extensions 2 × 5 min, défi en direct 2 × 4 min, questions 2 min |
+| Dataset libre validé avant le Lab 1 (S2), sinon credit scoring | Une extension par étudiant : catalogue de 16, niveaux ★ à ★★★, ou hors catalogue validée avant la fin de S5 |
+| Jalons taggés : J0 Setup (fin S3), extensions déclarées (fin S5), J1 MVP (fin S7), J2 Production (fin S8), `final` 48 h avant la soutenance (S9) | Travail par branches `lab/…` et `ext/<nom>`, fusionnées par PR relue par le partenaire |
+| Préparation du défi : « jeu du chaos » hebdomadaire en binôme à partir de J1 | Soutenance de 25 min par binôme, devant le poster : poster et démo du projet déployé 5 min, extensions 2 × 5 min, défi en direct 2 × 4 min, questions 2 min |
 | | Défi tiré au sort parmi six familles d'incidents : données invalides, drift, service qui ne répond plus, déploiement bloqué, modèle dégradé, secret manquant |
 
 **Énoncé :** `labs/m10-capstone/` · pré-contrôle de rendu `make check-m10` (aussi par jalon :
@@ -796,18 +767,18 @@ d'extension : ★ → 8/12, ★★ → 11/12, ★★★ → 12/12.
 ### Livrables étudiant
 
 - Repo taggé `j0` / `j1` / `j2` / `final`, avec le README du projet
-- Socle déployé et démontrable sur cluster kind
+- Socle démontrable sur cluster kind, et API déployée chez un fournisseur cloud (URL HTTPS)
 - Model card, dataset card, au moins 3 ADR, journal de bord
-- Rapport technique (10 pages max)
-- Slides et vidéo de démo de 3 min
+- Rapport numérique (PDF, 10 pages max)
+- Poster A1 avec deux QR codes (projet déployé, repo)
 
 ### Évaluation du module
 
-Noté sur 40 — socle 12 (binôme : `make check-m0` → `make check-m8` verts 6, reproductibilité 3,
-adaptation au cas d'usage 3), extension 12 (individuel : fonctionne et intégrée 5, tests / ADR /
-documentation 3, maîtrise orale 4 ; plafond selon le niveau), défi et questions 10 (individuel :
-diagnostic 4, démarche et outils 3, correction et réponses 3), livrables écrits 6 (binôme :
-README + dataset card + model card 3, rapport 2, journal et historique Git 1). Poids : 40 % de
+Noté sur 40 — socle 12 (`make check-m0` → `make check-m8` verts 5, reproductibilité 2,
+adaptation au cas d'usage 2, déploiement cloud 3), extension 12 (individuel : fonctionne et
+intégrée 5, tests / ADR / documentation 3, maîtrise orale 4 ; plafond selon le niveau), défi et
+questions 10 (individuel : diagnostic 4, démarche et outils 3, correction et réponses 3),
+livrables 6 (rapport numérique 3, poster et QR codes 2, repo documenté 1). Poids : 40 % de
 la note finale, avec un minimum de 8/20 sans compensation.
 
 # Stack technique du cours
@@ -870,62 +841,30 @@ la note finale, avec un minimum de 8/20 sans compensation.
 > comptes et de coûts individuels. Deux comptes gratuits suffisent : GitHub (repo, Actions,
 > GHCR) et Docker (images durcies du Lab 8).
 
-# Planning indicatif sur un semestre
+# Planning des 9 séances
 
-*Répartition proposée sur 12 semaines (3h/semaine) ou format bloc intensif.*
+*18 heures : 9 séances de 2 h, une par semaine. Chaque lab commence en séance et se termine en
+autonomie avant la séance suivante.*
 
-## Format semestriel (12 semaines × 3h)
-
-Chaque séance dure 3 h ; un module commence dès que le précédent est fini, dans la même séance
-s'il le faut (le volume de chaque module est celui de la table synoptique).
-
-| Semaine | Contenu de la séance (3 h) | Mini-projet |
+| Séance | Contenu (2 h) | Mini-projet |
 |---|---|---|
-| S1 | Module 0 : cours 1 h + lab 1 h (préparé avant la séance) · Module 1 : cours (1/2), 1 h | Binômes formés, repo du binôme créé ; postes à moins de 16 Go repérés, solution de repli décidée |
-| S2 | Module 1 : cours (2/2) 1 h + lab 2 h | Dataset libre validé **avant** la séance, sinon credit scoring |
-| S3 | Module 2 : cours 2 h + lab (1/3) 1 h | **J0 Setup** : tag `j0` en fin de semaine |
-| S4 | Module 2 : lab (2/3 et 3/3) 2 h · Module 3 : cours 1 h | — |
-| S5 | Module 3 : lab 2 h · Module 4 : cours 1 h | — |
-| S6 | Module 4 : lab 2 h · Module 5 : cours (1/2) 1 h | — |
-| S7 | Module 5 : cours (2/2) 1 h + lab (1/2) 2 h | — |
-| S8 | Module 5 : lab (2/2) 1 h · Module 6 : cours 1 h + lab (1/3) 1 h | Extensions déclarées (date limite) · **J1 MVP** : tag `j1` |
-| S9 | Module 6 : lab (2/3 et 3/3) 2 h · Module 7 : cours (1/2) 1 h | Extensions en développement ; jeu du chaos hebdomadaire |
-| S10 | Module 7 : cours (2/2) 1 h + lab 2 h | Extensions en développement |
-| S11 | Module 8 : cours 1 h + lab 1 h · Module 9 : cours 1 h | Extensions fusionnées · **J2 Production** : tag `j2` |
-| S12 | Module 10 : soutenances du mini-projet (3 h) | Tag `final` 48 h avant la soutenance |
+| S1 | Module 0 : cours 50 min + Lab 0 (setup) 1 h 10 | Binômes formés, repo du binôme créé ; postes à moins de 16 Go repérés, solution de repli décidée |
+| S2 | Module 1 : cours 45 min + Lab 1 (versioning, DVC, MLflow) 1 h 15 | Dataset libre validé **avant** la séance, sinon credit scoring |
+| S3 | Module 2 : cours 45 min + Lab 2 (pipelines Kubeflow) 1 h 15 | **J0 Setup** : tag `j0` en fin de semaine |
+| S4 | Module 3 : cours 45 min + Lab 3 (validation) 1 h 15 | — |
+| S5 | Module 4 : cours 45 min + Lab 4 (packaging) 1 h 15 | Extensions déclarées (date limite : fin de semaine) ; compte cloud ouvert |
+| S6 | Module 5 : cours 45 min + Lab 5 (serving KServe) 1 h 15 | Extensions en développement |
+| S7 | Module 6 : cours 45 min + Lab 6 (CI/CD/CT) 1 h 15 | **J1 MVP** : tag `j1` en fin de semaine ; jeu du chaos hebdomadaire |
+| S8 | Module 7 : cours 30 min · Module 8 : cours 15 min · Lab 7 (monitoring) 1 h 15 ; Lab 8 en autonomie | Extensions fusionnées · **J2 Production** : tag `j2` en fin de semaine ; déploiement cloud en cours |
+| S9 | Module 10 : soutenances du mini-projet (2 h), devant les posters | Tag `final` 48 h avant : projet déployé, rapport, poster |
 
-> [!NOTE]
-> **Reports par rapport au découpage « un module par semaine »**
-> Les Modules 6, 7 et 8 + 9 demandent chacun 4 h : ils commencent dans la séance précédente
-> (cours du Module 6 en S8, cours du Module 7 en S9), grâce aux marges de S1 (Module 0 = 2 h)
-> et de S8 (fin du Module 5). Les soutenances occupent toute la S12 (3 h pour 7 binômes) : l'heure
-> de lab encadrée du Module 9, qui tourne entièrement sur le poste sans cluster, se fait en
-> autonomie, comme la fin des Labs 7 et 8.
+Le Module 9 (LLMOps) est optionnel : son lab tourne entièrement sur le poste, sans cluster, et
+se fait en autonomie ; il sert de base à l'extension `rag-projet`.
 
 > [!NOTE]
 > **Durée des soutenances**
-> 25 minutes par binôme : un créneau de 3 h accueille 7 binômes. Au-delà, prévoir deux jurys en
-> parallèle ou un créneau supplémentaire.
-
-## Format bloc intensif (4 jours × 9h)
-
-Format alternatif pour une formation continue ou une session de rattrapage concentrée.
-
-| Jour | Modules | Mini-projet | Volume |
-|---|---|---|---|
-| Jour 1 | Modules 0, 1, 2 — Fondamentaux et pipelines | Dataset libre validé avant le premier jour · tag `j0` en fin de journée | 9 h |
-| Jour 2 | Modules 3, 4, 5 — Qualité, packaging, serving | Extensions déclarées · tag `j1` en fin de journée | 9 h |
-| Jour 3 | Modules 6, 7, 8, 9 — CI/CD, monitoring, spécialisations | Socle complet · tag `j2` en fin de journée | 9 h |
-| Jour 4 | Module 10 — Mini-projet accompagné | Extensions, préparation du défi, livrables | 9 h |
-
-> [!WARNING]
-> **Format intensif : attention au mini-projet**
-> Le format bloc 4 jours est efficace pour la transmission mais laisse peu de temps pour la
-> maturation du mini-projet. Si ce format est retenu, prévoir une période de 2 à 3 semaines
-> après la formation pendant laquelle les binômes finalisent socle, extensions et livrables,
-> avec soutenance à distance (défi en direct sur le cluster de l'étudiant ou, à défaut, sur
-> celui de l'enseignant). Les journées 1 à 3 regroupent 11 à 12 h de contenu nominal : les fins
-> de labs (variante Airflow, étapes optionnelles, rapports) se terminent en autonomie.
+> 25 minutes par binôme : une séance de 2 h accueille 4 binômes par jury. Au-delà, prévoir deux
+> jurys en parallèle ou un créneau supplémentaire.
 
 # Évaluation et barème
 
@@ -935,7 +874,7 @@ Format alternatif pour une formation continue ou une session de rattrapage conce
 
 | Composante | Format | Poids |
 |---|---|---|
-| Labs notés | 9 labs notés : M1 à M7 sur 20, M8 et M9 sur 10. Note de labs = total des points obtenus sur 160, ramené sur 20. Remise sur le repo Git du binôme, avant la séance suivante. | **30 %** |
+| Labs notés | 8 labs notés : M1 à M7 sur 20, M8 sur 10 (le Lab 9, optionnel, n'est pas compté). Note de labs = total des points obtenus sur 150, ramené sur 20. Remise sur le repo Git du binôme, avant la séance suivante. | **30 %** |
 | Mini-projet | Module 10. Binômes. Repo construit lab après lab (socle M0-M8) + une extension par étudiant + soutenance de 25 min avec défi en direct. Grille ci-dessous. | **40 %** |
 | Examen écrit | 2h en fin de semestre. QCM (1/3), analyse d'architecture (1/3), questions ouvertes sur cas d'usage (1/3). | **30 %** |
 
@@ -947,23 +886,22 @@ Chaque énoncé se termine par sa grille ; le tableau en reprend les critères. 
 | Lab | Noté sur | Critères (points) | Part de la note de labs |
 |---|---|---|---|
 | M0 — Setup | non noté | `make check-m0` vert : condition d'accès au Module 1 | — |
-| M1 — Versioning | 20 | reproductibilité 6 · tracking 6 · pertinence du modèle 4 · propreté du code 4 | 12,5 % |
-| M2 — Pipelines | 20 | pipeline KFP 6 · intégration MLflow 3 · robustesse 3 · pipeline Airflow 3 · rapport comparatif 5 | 12,5 % |
-| M3 — Validation | 20 | expectations 6 · gate bloquant 5 · drift 4 · validation du modèle 3 · propreté du code 2 | 12,5 % |
-| M4 — Packaging | 20 | image fonctionnelle 6 · optimisation taille 4 · benchmark 4 · scan sécurité 3 · rapport 3 | 12,5 % |
-| M5 — Serving | 20 | déploiement KServe 6 · autoscaling 4 · benchmark 4 · canary 3 · rapport 3 | 12,5 % |
-| M6 — CI/CD/CT | 20 | CI 6 · CD 6 · CT 8 | 12,5 % |
-| M7 — Monitoring | 20 | instrumentation 4 · Prometheus/Grafana 4 · Evidently en continu 4 · alertes SLO 3 · canary analysé 2 · rapport et démo 3 | 12,5 % |
-| M8 — Gouvernance | 10 | sécurité 2,5 · équité 2,5 · explicabilité 2,5 · gouvernance 2,5 | 6,25 % |
-| M9 — LLMOps | 10 | pipeline RAG 3 · évaluation Ragas 3 · observabilité 2 · sécurité 1 · rapport 1 | 6,25 % |
-| **Total** | **160** | | **100 %** |
+| M1 — Versioning | 20 | reproductibilité 6 · tracking 6 · pertinence du modèle 4 · propreté du code 4 | 13,3 % |
+| M2 — Pipelines | 20 | pipeline KFP 6 · intégration MLflow 3 · robustesse 3 · pipeline Airflow 3 · rapport comparatif 5 | 13,3 % |
+| M3 — Validation | 20 | expectations 6 · gate bloquant 5 · drift 4 · validation du modèle 3 · propreté du code 2 | 13,3 % |
+| M4 — Packaging | 20 | image fonctionnelle 6 · optimisation taille 4 · benchmark 4 · scan sécurité 3 · rapport 3 | 13,3 % |
+| M5 — Serving | 20 | déploiement KServe 6 · autoscaling 4 · benchmark 4 · canary 3 · rapport 3 | 13,3 % |
+| M6 — CI/CD/CT | 20 | CI 6 · CD 6 · CT 8 | 13,3 % |
+| M7 — Monitoring | 20 | instrumentation 4 · Prometheus/Grafana 4 · Evidently en continu 4 · alertes SLO 3 · canary analysé 2 · rapport et démo 3 | 13,3 % |
+| M8 — Gouvernance | 10 | sécurité 2,5 · équité 2,5 · explicabilité 2,5 · gouvernance 2,5 | 6,7 % |
+| M9 — LLMOps (optionnel) | — | grille de l'énoncé en auto-évaluation | non compté |
+| **Total** | **150** | | **100 %** |
 
 > [!NOTE]
-> **Pourquoi deux labs sur 10 ?**
-> Les Labs 8 et 9 ont les séances encadrées les plus courtes du cours (1 h de lab chacun) : ils
-> pèsent deux fois moins que les autres. Leurs énoncés gardent leur barème sur 10, et la note de
-> labs se calcule sur le total des points. Exemple : 112 points sur 140 aux Labs 1 à 7, 8/10 au
-> Lab 8 et 6/10 au Lab 9 donnent 126/160, soit 15,75/20.
+> **Pourquoi le Lab 8 sur 10 ?**
+> Le Lab 8 n'a pas de temps de lab encadré (il se fait en autonomie) : il pèse deux fois moins
+> que les autres. La note de labs se calcule sur le total des points. Exemple : 112 points sur 140
+> aux Labs 1 à 7 et 8/10 au Lab 8 donnent 120/150, soit 16/20.
 
 > [!TIP]
 > **Un check vert n'est pas une note maximale**
@@ -974,32 +912,35 @@ Chaque énoncé se termine par sa grille ; le tableau en reprend les critères. 
 
 | Bloc | Qui | Critère | Points |
 |---|---|---|---|
-| **Socle** (12) | Binôme | `make check-m0` → `make check-m8` verts au tag `final` | 6 |
-| | | Reproductibilité : `git clone`, `make up`, `uv sync`, `dvc repro` (+ `dvc push`), pipeline | 3 |
-| | | Adaptation au cas d'usage : seuils et coûts, équité, alertes, rien en dur | 3 |
+| **Socle** (12) | A : binôme · B : individuel | `make check-m0` → `make check-m8` verts au tag `final` | 5 |
+| | | Reproductibilité : `git clone`, `make up`, `uv sync`, `dvc repro` (+ `dvc push`), pipeline | 2 |
+| | | Adaptation au cas d'usage : seuils et coûts, équité, alertes, rien en dur | 2 |
+| | Binôme | Déploiement cloud : URL publique HTTPS qui répond, procédure documentée dans le README | 3 |
 | **Extension** (12) | Individuel | Fonctionne et est intégrée au socle (attendus minimaux) | 5 |
 | | | Tests, ADR, documentation (page du rapport) | 3 |
 | | | Maîtrise à l'oral : démo, questions sur les choix | 4 |
 | **Défi et questions** (10) | Individuel | Diagnostic de l'incident | 4 |
 | | | Démarche et outils | 3 |
 | | | Correction et réponses aux questions | 3 |
-| **Livrables écrits** (6) | Binôme | README, dataset card, model card | 3 |
-| | | Rapport technique (10 pages max) | 2 |
-| | | Journal de bord et historique Git | 1 |
+| **Livrables** (6) | Binôme | Rapport numérique (10 pages max) | 3 |
+| | | Poster : lisible, complet, QR codes fonctionnels | 2 |
+| | A : binôme · B : individuel | Repo documenté : README, dataset card, model card, journal, ADR, historique Git | 1 |
 | **Total** | | | **40** |
 
-Le niveau de l'extension plafonne son bloc : ★ → 8/12, ★★ → 11/12, ★★★ → 12/12. Les blocs
-« socle » et « livrables écrits » sont communs au binôme ; l'historique Git et le journal de bord
-permettent de les individualiser si un membre n'a visiblement pas contribué.
+Le niveau de l'extension plafonne son bloc : ★ → 8/12, ★★ → 11/12, ★★★ → 12/12. L'extension,
+le défi et les questions sont toujours individuels ; pour le reste, la portée dépend de
+l'organisation du binôme (A : repo commun, B : deux repos). En option A, l'historique Git et le
+journal de bord permettent d'individualiser les critères communs si un membre n'a visiblement
+pas contribué.
 
 ## Jalons du mini-projet
 
 | Tag | Quand | Contenu attendu | Vérifié par |
 |---|---|---|---|
-| `j0` | fin S3 | `dataset.yaml` (validé si dataset libre), données versionnées par DVC, runs dans MLflow, `make check-m0` et `make check-m1` verts | `make check-m10 JALON=j0` |
-| `j1` | fin S8 | pipeline avec gate de validation, modèle servi par KServe, `make check-m2` à `make check-m5` verts, extensions déclarées | `make check-m10 JALON=j1` |
-| `j2` | fin S11 | CI/CD, monitoring, model card, `make check-m6` à `make check-m8` verts, extensions fusionnées | `make check-m10 JALON=j2` |
-| `final` | 48 h avant la soutenance | tout ce qui précède + rapport PDF, slides, vidéo de démo de 3 min, journal, ADR | `make check-m10` |
+| `j0` | fin S3 | organisation du binôme (option A ou B) déclarée dans le README, `dataset.yaml` (validé si dataset libre), données versionnées par DVC, runs dans MLflow, `make check-m0` et `make check-m1` verts | `make check-m10 JALON=j0` |
+| `j1` | fin S7 | pipeline avec gate de validation, modèle servi par KServe, `make check-m2` à `make check-m5` verts, extensions déclarées (depuis la fin de S5), compte cloud ouvert avec une alerte de budget | `make check-m10 JALON=j1` |
+| `j2` | fin S8 | CI/CD, monitoring, model card, `make check-m6` à `make check-m8` verts, extensions fusionnées | `make check-m10 JALON=j2` |
+| `final` | 48 h avant la soutenance | tout ce qui précède + projet déployé (URL HTTPS dans le README), rapport numérique (10 p. max), poster A1 et ses QR codes, journal, ADR | `make check-m10` |
 
 Seul l'état au tag `final` est évalué. Les jalons intermédiaires servent à repérer tôt les
 binômes en difficulté : un tag absent ou un pré-contrôle très rouge déclenche un point avec

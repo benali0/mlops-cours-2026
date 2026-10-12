@@ -40,6 +40,8 @@ from reportlab.platypus import (
     CondPageBreak,
     Flowable,
     Frame,
+    Image,
+    KeepTogether,
     NextPageTemplate,
     PageBreak,
     PageTemplate,
@@ -807,6 +809,7 @@ class Renderer:
         self.h1_count = 0
         self.after_banner = False
         self.anchors: set[str] = set()
+        self.base_dir: Path = Path(".")
 
     # ---------------------------------------------------------------- inline
     def inline(self, nodes, ctx: Ctx, in_link=False) -> str:
@@ -928,10 +931,34 @@ class Renderer:
             i += 1
         return out
 
+    def figure(self, img_node, ctx: Ctx) -> list[Flowable]:
+        """Paragraphe réduit à une image ``![légende](chemin)`` : figure centrée + légende."""
+        src = self.base_dir / str(img_node.attrs.get("src", ""))
+        caption = plain_text(img_node).strip()
+        if not src.is_file():
+            print(f"  image introuvable : {src}", file=sys.stderr)
+            return [Paragraph(f"<i>[{run_markup(caption)}]</i>", self.para_style(ctx))]
+        img = Image(str(src))
+        max_w = CONTENT_W - (ctx.left - ctx.base) - ctx.right
+        max_h = 120 * mm
+        scale = min(max_w / img.imageWidth, max_h / img.imageHeight)
+        img.drawWidth, img.drawHeight = img.imageWidth * scale, img.imageHeight * scale
+        img.hAlign = "CENTER"
+        parts: list[Flowable] = [Spacer(1, 4), img]
+        if caption:
+            parts.append(Paragraph(f"<i>{run_markup(caption)}</i>",
+                                   self.para_style(ctx, alignment=TA_CENTER, fontSize=ctx.size - 1,
+                                                   textColor=colors.HexColor(HEX["muted"]), spaceBefore=3)))
+        parts.append(Spacer(1, 6))
+        return [KeepTogether(parts)]
+
     def paragraph(self, n, ctx: Ctx) -> list[Flowable]:
         inline = n.children[0] if n.children else None
         if inline is None:
             return []
+        real = [c for c in inline.children if not (c.type == "softbreak" or (c.type == "text" and not c.content.strip()))]
+        if len(real) == 1 and real[0].type == "image":
+            return self.figure(real[0], ctx)
         markup = self.inline(inline.children, ctx)
         if not markup.strip():
             return []
@@ -1506,7 +1533,7 @@ def build_meta(fm: dict, body: str, path: Path) -> DocMeta:
             doc_type=doc_type, title=title, subtitle=subtitle,
             kicker=str(fm.get("cover_kicker", "COURS MLOps")), fields=fields,
             header=running,
-            footer_left=str(fm.get("footer_left", "Cycle Ingénieur Informatique — 36h")),
+            footer_left=str(fm.get("footer_left", "Cycle Ingénieur Informatique — Cours MLOps")),
             cover_footer_title=str(fm.get("cover_footer_title", "Document maître du cours")),
             cover_footer_text=str(fm.get("cover_footer_text", "")),
             pdf_title=running, pdf_subject=subtitle or title,
@@ -1533,10 +1560,10 @@ def build_meta(fm: dict, body: str, path: Path) -> DocMeta:
     return DocMeta(
         doc_type="lab", title=title, subtitle=subtitle, kicker=kicker, fields=fields,
         header=f"MLOps · {header}",
-        footer_left=str(fm.get("footer_left", "Cycle Ingénieur Informatique — Cours MLOps 36h")),
+        footer_left=str(fm.get("footer_left", "Cycle Ingénieur Informatique — Cours MLOps")),
         cover_footer_title=str(fm.get("cover_footer_title", "Cycle Ingénieur Informatique")),
         cover_footer_text=str(fm.get("cover_footer_text",
-                                     f"Cours MLOps — 36h · Document compagnon des slides du Module {module}")),
+                                     f"Cours MLOps · Document compagnon des slides du Module {module}")),
         pdf_title=f"MLOps — {running}" if running.lower().startswith("module") else f"MLOps — Module {module} — {running}",
         pdf_subject=subtitle or title,
         keywords=", ".join(["MLOps", f"Module {module}"] + [s.strip() for s in str(fm.get("stack", "")).split("·") if s.strip()]),
@@ -1700,6 +1727,7 @@ def build_one(md_path: Path, out_dir: Path) -> tuple[Path, int]:
     outline = OutlineState()
     renderer = Renderer(meta.doc_type, outline, single_h1=h1s <= 1)
     renderer.anchors = collect_anchors(tree)
+    renderer.base_dir = md_path.resolve().parent
     story: list[Flowable] = [NextPageTemplate("content"), PageBreak()]
     story += protect_headings(renderer.blocks(tree.children, Ctx()))
     out_dir.mkdir(parents=True, exist_ok=True)
