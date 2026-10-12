@@ -24,6 +24,7 @@
 #   EXT_MIN=2             nombre d'extensions fusionnées attendues (1 en option B ou seul)
 #   AUTEURS_MIN=2         nombre minimal d'auteurs distincts dans l'historique (1 en option B)
 #   SOUTENANCE="2026-12-15 08:00"   vérifie que le tag final précède la soutenance de 48 h
+#   URL_CHECK=0           ne pas appeler l'URL du projet déployé (hors réseau, CI)
 #   LOG_DIR=…             dossier des journaux des checks (défaut /tmp/mlops-precontrole/…)
 #
 # Code retour = nombre de vérifications en échec (0 = rendu complet). Les
@@ -36,7 +37,7 @@ cd "$(dirname "$0")/../.." || exit 1
 JALON=${JALON:-final}
 AVEC_CLUSTER=1
 AVEC_GH=0
-usage() { sed -n '4,30p' "$SELF" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '4,31p' "$SELF" | sed 's/^# \{0,1\}//'; }
 while [ $# -gt 0 ]; do
   case "$1" in
     --jalon)
@@ -453,7 +454,7 @@ if [ "$JALON" = final ]; then
     url=${url%/}
     url=${url%/docs}
     echo "$url"
-    if command -v curl >/dev/null 2>&1; then
+    if [ "${URL_CHECK:-1}" != 0 ] && command -v curl >/dev/null 2>&1; then
       curl -fsS --max-time 30 "$url/health" | cut -c1-120 || return 1
     fi
   }
