@@ -8,7 +8,7 @@ la VM**, exactement comme sur un poste Linux.
 | Fichier | Rôle |
 |---|---|
 | `Vagrantfile` | La machine : box `bento/ubuntu-24.04`, RAM / CPU, ports redirigés vers Windows |
-| `playbook.yml` | Sa configuration (Ansible, idempotent) : étapes 1, 2 et 6.1 du Lab 0 automatisées |
+| `playbook.yml` | Sa configuration (Ansible, idempotent) : installe les outils vérifiés aux étapes 1, 2 et 6.1 du Lab 0 |
 
 ## Pré-requis sur Windows
 
@@ -38,8 +38,8 @@ PC de 8 Go : `$env:VM_MEMORY=6144; vagrant up`. À partir du Lab 2 (PC de 16 Go)
 > (Docker 29.x, Docker Compose v2.x, kubectl v1.37.1, helm v4.3.0, k9s v0.51.0, kind v0.33.0,
 > uv 0.12.23) puis `PLAY RECAP … failed=0`.
 
-Dans la VM, reprenez le Lab 0 à l'**étape 3** (votre clé SSH GitHub se crée dans la VM) : les
-étapes 1 et 2 sont faites, vérifiez-les simplement avec leurs commandes. Clonez votre repo
+Dans la VM, poursuivez le Lab 0 à l'**étape 1.2** (vérification des outils, déjà installés),
+puis l'étape 3 (votre clé SSH GitHub se crée dans la VM). Clonez votre repo
 **dans la VM** (`cd ~ && git clone git@github.com:VOTRE_USER/mlops-cours-2026.git`), jamais dans
 le dossier partagé Windows : le système de fichiers Windows ralentit `uv` et DVC et casse les
 liens symboliques.

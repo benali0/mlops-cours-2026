@@ -220,20 +220,13 @@ projets. Une commande suffit : `uv sync`.
 | OS | Linux (Ubuntu 22.04+) / macOS 13+ / Windows 10-11 + VM du cours (VirtualBox 7.2 + Vagrant 2.4.9) | — |
 | Connexion | Internet stable (téléchargements ~4 Go) | — |
 
-> [!WARNING]
-> **Windows : travaillez dans la VM du cours**
-> Sous Windows, le cours tourne dans une VM Ubuntu 24.04 décrite en code dans le repo
-> (`infra/vagrant/` : Vagrant crée la VM, Ansible y installe Docker, kind, kubectl, helm, k9s et
-> uv aux versions du cours). Installez **VirtualBox 7.2** et **Vagrant 2.4.9**, téléchargez le
-> repo du cours (**Code** > **Download ZIP**), puis dans PowerShell :
-> `cd mlops-cours-2026-main\infra\vagrant`, `vagrant up` (15 à 25 min), `vagrant ssh`.
-> **Toutes les commandes de ce lab se tapent ensuite dans la VM** : les étapes 1, 2 et 6.1 y
-> sont déjà faites (lancez seulement leurs commandes de vérification), l'étape 3 se fait dans la VM
-> (clé SSH comprise) et votre repo est cloné dans la VM (`~/mlops-cours-2026`), jamais dans un
-> dossier Windows. Les adresses `http://localhost:5000` (MLflow) et `http://localhost:8888`
-> (filer) s'ouvrent dans le navigateur Windows. Détails, ports et dépannage :
-> `infra/vagrant/README.md`. Alternative possible : Docker Desktop + WSL2 (Ubuntu 24.04), en
-> travaillant dans `/home/...` et non dans `/mnt/c/...`.
+> [!NOTE]
+> **Où travaille-t-on ?**
+> Dans la **VM du cours** : une machine Ubuntu 24.04 décrite en code dans le repo
+> (`infra/vagrant/`), où Docker, kind, kubectl, helm, k9s et uv sont déjà installés aux versions
+> du cours. C'est le parcours de **tous les postes Windows**, et le plus simple pour tout le
+> monde : vous la créez à l'étape 1. Seuls les postes Linux et macOS peuvent aussi installer les
+> outils directement : annexe A.
 
 > [!CAUTION]
 > **16 Go de RAM : vérifiez votre poste dès aujourd'hui**
@@ -254,11 +247,10 @@ cluster, aux services et aux vérifications : étapes **4, 5, 7 et 8**.
 
 | # | Étape | Quand | Durée |
 |---|---|---|---|
-| 0 | **Windows uniquement** : créer la VM du cours (`vagrant up`), puis y entrer (`vagrant ssh`) | Avant la séance | 25 min |
-| 1 | Vérifier Docker Engine + Docker Compose | Avant la séance | 10 min |
-| 2 | Installer kubectl, helm, k9s et kind | Avant la séance | 10 min |
+| 1 | Créer la VM du cours (`vagrant up`) et vérifier Docker | Avant la séance | 25 min |
+| 2 | Vérifier kubectl, helm, k9s et kind (déjà dans la VM) | Avant la séance | 5 min |
 | 3 | Forker et cloner le repo du cours | Avant la séance | 10 min |
-| 6 | Installer Python 3.12 + uv, synchroniser l'environnement, pré-télécharger les images | Avant la séance | 25 min |
+| 6 | Python 3.12, environnement du cours (`uv sync`), pré-téléchargement des images | Avant la séance | 25 min |
 | 4 | Créer le cluster kind + le registry local | En séance | 10 min |
 | 5 | Déployer le stockage S3 (SeaweedFS) et MLflow dans le cluster | En séance | 15 min |
 | 7 | Smoke tests MLflow et DVC | En séance | 10 min |
@@ -271,23 +263,14 @@ cluster, aux services et aux vérifications : étapes **4, 5, 7 et 8**.
 > (`uv sync`, puis `make prefetch` qui récupère à l'avance l'image des nœuds kind et les images
 > du cours). Arrivez en séance avec `docker run --rm hello-world`, `kind version`, `uv --version`
 > et `python --version` qui répondent dans le dossier du repo. Bloqué ? Notez le message
-> d'erreur, consultez l'annexe « Troubleshooting » et venez 15 minutes en avance.
+> d'erreur, consultez l'annexe B « Troubleshooting » et venez 15 minutes en avance.
 
-> [!IMPORTANT]
-> **Parcours Windows, dans l'ordre**
-> 1. **PowerShell** : installez VirtualBox 7.2 et Vagrant 2.4.9, téléchargez le repo du cours
->    (**Code** > **Download ZIP**), décompressez-le, puis `cd` dans son dossier `infra\vagrant`
->    et lancez `vagrant up` (15 à 25 min la première fois) ; enfin `vagrant ssh`.
-> 2. **Dans la VM** (l'invite devient `vagrant@mlops-vm:~$`) : étapes **1 et 2** = lancez
->    seulement les commandes de **vérification** (`docker run --rm hello-world`,
->    `kubectl version --client`, `helm version`, `k9s version`, `kind version`) : la VM les a
->    déjà installés.
-> 3. **Dans la VM** : étape **3** en entier (clé SSH créée dans la VM, clone dans
->    `~/mlops-cours-2026`), puis étape **6** à partir de 6.2 (uv est déjà installé).
-> 4. **Dans la VM** : étapes 4, 5, 7 et 8 comme tout le monde. Les pages web (MLflow, filer)
->    s'ouvrent dans le navigateur **Windows** : `http://localhost:5000`, `http://localhost:8888`.
-> 5. Entre deux séances : `vagrant suspend` dans PowerShell (dossier `infra\vagrant`), puis
->    `vagrant resume` et `vagrant ssh` la fois suivante.
+> [!TIP]
+> **Deux terminaux, une règle**
+> **PowerShell** (Windows) ne sert qu'aux commandes `vagrant` (créer, démarrer, mettre en pause
+> la VM). **Toutes les autres commandes du lab se tapent dans la VM**, après `vagrant ssh`
+> (l'invite devient `vagrant@mlops-vm:~$`). Les pages web (MLflow, filer S3) s'ouvrent dans le
+> navigateur Windows : `http://localhost:5000`, `http://localhost:8888`.
 
 ## Convention de notation
 
@@ -297,18 +280,42 @@ affiché sur chaque bloc). Les lignes commençant par `#` sont des commentaires.
 « Sortie attendue » montrent le résultat attendu. Les encadrés colorés signalent les pièges
 fréquents. `VOTRE_USER` désigne partout votre identifiant GitHub.
 
-## Étape 1/8 — Avant la séance : vérifier Docker Engine + Docker Compose (10 min)
-
-> [!NOTE]
-> **Windows (VM du cours)**
-> Docker est déjà installé dans la VM par `vagrant up`. Tapez seulement les commandes de
-> vérification ci-dessous (1.1 et 1.2), **dans la VM**.
-
-### 1.1 Vérifier que Docker est installé
+## Étape 1/8 — Avant la séance : créer la VM du cours et vérifier Docker (25 min)
 
 Docker est le pré-requis fondamental : il fait tourner le cluster Kubernetes (kind utilise des
 conteneurs Docker comme nœuds), le registry d'images local, les outils en conteneur (client S3) et
-tous les services du cours.
+tous les services du cours. La VM du cours l'installe pour vous, avec tous les autres outils.
+
+### 1.1 Créer la VM (PowerShell, une seule fois)
+
+1. Installez **VirtualBox 7.2** (virtualbox.org) puis **Vagrant 2.4.9**
+   (developer.hashicorp.com/vagrant/install), et redémarrez le PC.
+2. Ouvrez le repo modèle du cours,
+   [https://github.com/firaskhl/mlops-cours-2026](https://github.com/firaskhl/mlops-cours-2026),
+   bouton **Code** > **Download ZIP**, puis décompressez l'archive (par exemple dans
+   Téléchargements).
+3. Dans **PowerShell**, allez dans le dossier `infra\vagrant` de l'archive décompressée, puis :
+
+```powershell
+vagrant up
+vagrant ssh
+```
+
+> **Sortie attendue :** `vagrant up` télécharge l'image Ubuntu (environ 1 Go), crée la VM puis
+> laisse Ansible y installer les outils (15 à 25 minutes la première fois, sans surveillance) ; il
+> se termine par un récapitulatif `PLAY RECAP` sans `failed`. `vagrant ssh` ouvre le terminal de
+> la VM : l'invite devient `vagrant@mlops-vm:~$`.
+
+Cette archive ne sert qu'à créer la VM : votre copie de travail du repo sera clonée **dans la
+VM** à l'étape 3. Les commandes `vagrant` du quotidien (`suspend`, `resume`, `halt`) sont dans la
+section « Les outils du lab en 15 minutes » ; dépannage : `infra/vagrant/README.md`.
+
+> [!NOTE]
+> **Linux ou macOS sans VM ?**
+> Installez d'abord Docker, kubectl, helm, k9s, kind et uv avec l'annexe A, puis faites les
+> vérifications ci-dessous dans votre terminal.
+
+### 1.2 Vérifier Docker (dans la VM)
 
 ```bash
 docker --version
@@ -319,18 +326,7 @@ docker compose version
 > `v5.x` (le plugin Compose est passé directement de la v2 à la v5 fin 2025). La commande est bien
 > `docker compose` (plugin), pas l'ancien `docker-compose` (v1, abandonné).
 
-> [!TIP]
-> **Si Docker n'est pas installé ou trop ancien**
-> Suivez la procédure officielle :
->
-> - Linux (Ubuntu) : [https://docs.docker.com/engine/install/ubuntu/](https://docs.docker.com/engine/install/ubuntu/)
-> - macOS : Docker Desktop depuis docker.com
-> - Windows : rien à installer, Docker est fourni par la VM du cours (`vagrant up`)
->
-> Sur Linux, ajoutez votre utilisateur au groupe `docker` pour éviter les `sudo` :
-> `sudo usermod -aG docker $USER` puis `newgrp docker` (ou bien : déconnexion / reconnexion).
-
-### 1.2 Smoke test
+### 1.3 Smoke test
 
 Lancer un conteneur jetable pour vérifier que le moteur fonctionne et que le réseau Docker est OK :
 
@@ -341,7 +337,7 @@ docker run --rm hello-world
 > **Sortie attendue :** un message `Hello from Docker!` avec une explication des étapes effectuées
 > par le démon.
 
-### 1.3 Vérifier les ressources allouées
+### 1.4 Vérifier les ressources allouées
 
 ```bash
 docker info | grep -E 'CPUs|Total Memory'
@@ -349,19 +345,14 @@ docker info | grep -E 'CPUs|Total Memory'
 
 > [!WARNING]
 > **Ressources insuffisantes ?**
-> Si `docker info` affiche moins de 4 CPU ou 6 Go de RAM disponibles, le cluster kind à 3 nœuds
-> (avec SeaweedFS et MLflow) risque de ramer. Sur Docker Desktop, ouvrez Settings > Resources et
-> augmentez les valeurs.
+> La VM reçoit par défaut 4 CPU et 8 Go de RAM : le cluster kind à 3 nœuds (avec SeaweedFS et
+> MLflow) tourne bien avec ces valeurs. En dessous, il risque de ramer : voir
+> `infra/vagrant/README.md` (variables `VM_CPUS` et `VM_MEMORY`) ou, sans VM, les réglages de
+> Docker Desktop (Settings > Resources).
 
-## Étape 2/8 — Avant la séance : installer kubectl, helm, k9s et kind (10 min)
+## Étape 2/8 — Avant la séance : vérifier kubectl, helm, k9s et kind (5 min)
 
-> [!NOTE]
-> **Windows (VM du cours)**
-> Ces quatre outils sont déjà installés dans la VM. Sautez les blocs d'installation et lancez
-> seulement les commandes de vérification (`kubectl version --client`, `helm version`,
-> `k9s version`, `kind version`), **dans la VM**.
-
-Quatre outils en ligne de commande indispensables :
+Quatre outils en ligne de commande indispensables, déjà installés dans la VM :
 
 - **kubectl** : le client officiel pour parler à n'importe quel cluster Kubernetes.
 - **helm** : le gestionnaire de paquets de Kubernetes (Prometheus, Argo CD, etc. dans les modules
@@ -371,18 +362,7 @@ Quatre outils en ligne de commande indispensables :
   Idéal pour le développement : démarrage en une minute, suppression propre en une commande,
   isolation totale.
 
-### 2.1 Installer kubectl
-
-```bash
-# Linux x86_64
-KVER=$(curl -L -s https://dl.k8s.io/release/stable.txt)
-curl -LO "https://dl.k8s.io/release/${KVER}/bin/linux/amd64/kubectl"
-chmod +x kubectl
-sudo mv kubectl /usr/local/bin/
-
-# macOS (Homebrew)
-brew install kubectl
-```
+### 2.1 kubectl
 
 ```bash
 kubectl version --client
@@ -391,15 +371,7 @@ kubectl version --client
 > **Sortie attendue :** `Client Version: v1.37.x` (v1.36 minimum : kubectl doit rester à une
 > version mineure près de celle du cluster, ici Kubernetes v1.37).
 
-### 2.2 Installer helm
-
-```bash
-# Linux / macOS - script officiel (Helm 4)
-curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash
-
-# macOS alternative
-brew install helm
-```
+### 2.2 helm
 
 ```bash
 helm version
@@ -409,19 +381,7 @@ helm version
 > reste compatible avec les charts existants ; si vous avez déjà Helm 3, il fonctionnera pour le
 > cours, mais il ne reçoit plus que des correctifs de sécurité jusqu'en novembre 2026.
 
-### 2.3 Installer k9s
-
-```bash
-# Linux (Ubuntu / Debian, x86_64) - paquet officiel
-wget https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb
-sudo apt install ./k9s_linux_amd64.deb && rm k9s_linux_amd64.deb
-
-# Linux (autre distribution) - alternative
-curl -sS https://webinstall.dev/k9s | bash
-
-# macOS
-brew install derailed/k9s/k9s
-```
+### 2.3 k9s
 
 ```bash
 k9s version
@@ -435,23 +395,14 @@ k9s version
 > les logs d'un pod, `s` ouvre un shell, `d` décrit, `Ctrl-D` supprime, `q` quitte. À utiliser
 > tout le long du cours.
 
-### 2.4 Installer kind
-
-```bash
-# Linux x86_64 (sur ARM64 : remplacer amd64 par arm64)
-curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64
-chmod +x ./kind && sudo mv ./kind /usr/local/bin/kind
-
-# macOS
-brew install kind
-```
+### 2.4 kind
 
 ```bash
 kind version
 ```
 
 > **Sortie attendue :** `kind v0.33.0 go1.xx.x linux/amd64` (ou `darwin/arm64` sur Mac Apple
-> Silicon). kind v0.33.0 démarre par défaut des nœuds **Kubernetes v1.37.0**.
+> Silicon sans VM). kind v0.33.0 démarre par défaut des nœuds **Kubernetes v1.37.0**.
 
 ## Étape 3/8 — Avant la séance : forker et cloner le repo du cours (10 min)
 
@@ -1215,19 +1166,11 @@ uv est un gestionnaire de paquets Python ultra-rapide (écrit en Rust, par Astra
 Ruff). Il remplace `pip` + `virtualenv` + `pip-tools` + `pyenv`. Pourquoi le choisir : installation
 10 à 100x plus rapide que pip, lockfile reproductible, gestion des versions Python intégrée.
 
-### 6.1 Installer uv
+### 6.1 Vérifier uv
 
-> [!NOTE]
-> **Windows (VM du cours)**
-> uv est déjà installé dans la VM ; vérifiez seulement avec `uv --version`, puis passez à 6.2.
+uv est déjà installé dans la VM (sans VM : annexe A).
 
 ```bash
-# Linux / macOS / WSL2
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Recharger le shell pour avoir uv dans le PATH
-source ~/.bashrc       # ou ~/.zshrc selon votre shell
-
 uv --version
 ```
 
@@ -1517,7 +1460,78 @@ make check-m0
 > Faites une capture d'écran de la sortie de `make check-m0` (ou de cette checklist) **une fois
 > tous les items verts** et déposez-la sur l'espace de rendu du cours. C'est le livrable du Lab 0.
 
-## Annexe — Troubleshooting
+## Annexe A — Installer les outils sans la VM (Linux / macOS)
+
+À suivre **uniquement** si vous travaillez sans la VM du cours, sur un poste Linux ou macOS.
+Ensuite, faites les vérifications des étapes 1.2 à 2.4 et 6.1 dans votre terminal.
+
+**Docker** : procédure officielle, Linux (Ubuntu) :
+[https://docs.docker.com/engine/install/ubuntu/](https://docs.docker.com/engine/install/ubuntu/) ;
+macOS : Docker Desktop (docker.com). Sur Linux, ajoutez votre utilisateur au groupe `docker` pour
+éviter les `sudo` : `sudo usermod -aG docker $USER` puis `newgrp docker` (ou bien : déconnexion /
+reconnexion).
+
+**kubectl**
+
+```bash
+# Linux x86_64
+KVER=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+curl -LO "https://dl.k8s.io/release/${KVER}/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+# macOS (Homebrew)
+brew install kubectl
+```
+
+**helm**
+
+```bash
+# Linux / macOS - script officiel (Helm 4)
+curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash
+
+# macOS alternative
+brew install helm
+```
+
+**k9s**
+
+```bash
+# Linux (Ubuntu / Debian, x86_64) - paquet officiel
+wget https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb
+sudo apt install ./k9s_linux_amd64.deb && rm k9s_linux_amd64.deb
+
+# Linux (autre distribution) - alternative
+curl -sS https://webinstall.dev/k9s | bash
+
+# macOS
+brew install derailed/k9s/k9s
+```
+
+**kind**
+
+```bash
+# Linux x86_64 (sur ARM64 : remplacer amd64 par arm64)
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64
+chmod +x ./kind && sudo mv ./kind /usr/local/bin/kind
+
+# macOS
+brew install kind
+```
+
+**uv**
+
+```bash
+# Linux / macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Recharger le shell pour avoir uv dans le PATH
+source ~/.bashrc       # ou ~/.zshrc selon votre shell
+```
+
+**Clone** : sans VM, clonez votre repo à l'étape 3 dans `~/mlops-cours-2026` sur votre poste.
+
+## Annexe B — Troubleshooting
 
 Erreurs les plus fréquentes rencontrées par les promotions précédentes, avec le diagnostic et la
 solution. Si votre problème n'est pas listé, demandez à l'enseignant ou ouvrez une issue sur le

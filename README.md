@@ -14,20 +14,23 @@ une brique, et le résultat final est votre mini-projet.
 
 ## Démarrage
 
+1. **Créer la VM du cours** (Lab 0, étape 1) : VirtualBox 7.2 + Vagrant 2.4.9 sur le poste, puis
+   dans PowerShell, depuis le dossier [`infra/vagrant/`](infra/vagrant/README.md) de ce repo
+   téléchargé (**Code** > **Download ZIP**) : `vagrant up` puis `vagrant ssh`. Docker, kind,
+   kubectl, helm, k9s et uv y sont déjà installés (Linux / macOS sans VM : annexe A du Lab 0).
+2. **Dans la VM**, avec votre propre copie de ce repo (Lab 0, étape 3) :
+
 ```bash
 git clone git@github.com:VOTRE_USER/mlops-cours-2026.git && cd mlops-cours-2026
+uv sync          # environnement Python du cours (Python 3.12)
 make prefetch    # avant la séance : images du socle (~3 Go)
 make up          # cluster kind + registry + stockage S3 (SeaweedFS) + MLflow
 make pf          # accès depuis le poste : S3 :8333, filer :8888, MLflow :5000
-uv sync          # environnement Python du cours (Python 3.12)
 ```
 
 Puis suivez le [Lab 0](labs/m0-setup/README.md) jusqu'au bout : `make check-m0` n'est vert
 qu'une fois toutes ses étapes faites (bucket de test, smoke tests, premier commit).
 
-Prérequis : Docker, kind, kubectl, helm, k9s, uv, git (installés au Lab 0).
-**Windows** : tout tourne dans la VM du cours, créée par `vagrant up` depuis
-[`infra/vagrant/`](infra/vagrant/README.md) (VirtualBox 7.2 + Vagrant 2.4.9 sur le poste).
 **16 Go de RAM requis** à partir du Lab 2 (8 Go suffisent pour les Labs 0 et 1) : sinon,
 prévenez l'enseignant dès la première séance (poste de l'école, VM, ou binôme équipé).
 
