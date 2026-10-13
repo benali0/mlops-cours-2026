@@ -254,6 +254,7 @@ cluster, aux services et aux vérifications : étapes **4, 5, 7 et 8**.
 
 | # | Étape | Quand | Durée |
 |---|---|---|---|
+| 0 | **Windows uniquement** : créer la VM du cours (`vagrant up`), puis y entrer (`vagrant ssh`) | Avant la séance | 25 min |
 | 1 | Vérifier Docker Engine + Docker Compose | Avant la séance | 10 min |
 | 2 | Installer kubectl, helm, k9s et kind | Avant la séance | 10 min |
 | 3 | Forker et cloner le repo du cours | Avant la séance | 10 min |
@@ -272,6 +273,22 @@ cluster, aux services et aux vérifications : étapes **4, 5, 7 et 8**.
 > et `python --version` qui répondent dans le dossier du repo. Bloqué ? Notez le message
 > d'erreur, consultez l'annexe « Troubleshooting » et venez 15 minutes en avance.
 
+> [!IMPORTANT]
+> **Parcours Windows, dans l'ordre**
+> 1. **PowerShell** : installez VirtualBox 7.2 et Vagrant 2.4.9, téléchargez le repo du cours
+>    (**Code** > **Download ZIP**), décompressez-le, puis `cd` dans son dossier `infra\vagrant`
+>    et lancez `vagrant up` (15 à 25 min la première fois) ; enfin `vagrant ssh`.
+> 2. **Dans la VM** (l'invite devient `vagrant@mlops-vm:~$`) : étapes **1 et 2** = lancez
+>    seulement les commandes de **vérification** (`docker run --rm hello-world`,
+>    `kubectl version --client`, `helm version`, `k9s version`, `kind version`) : la VM les a
+>    déjà installés.
+> 3. **Dans la VM** : étape **3** en entier (clé SSH créée dans la VM, clone dans
+>    `~/mlops-cours-2026`), puis étape **6** à partir de 6.2 (uv est déjà installé).
+> 4. **Dans la VM** : étapes 4, 5, 7 et 8 comme tout le monde. Les pages web (MLflow, filer)
+>    s'ouvrent dans le navigateur **Windows** : `http://localhost:5000`, `http://localhost:8888`.
+> 5. Entre deux séances : `vagrant suspend` dans PowerShell (dossier `infra\vagrant`), puis
+>    `vagrant resume` et `vagrant ssh` la fois suivante.
+
 ## Convention de notation
 
 Les blocs de code contiennent des commandes shell à exécuter telles quelles : elles n'ont **pas**
@@ -281,6 +298,11 @@ affiché sur chaque bloc). Les lignes commençant par `#` sont des commentaires.
 fréquents. `VOTRE_USER` désigne partout votre identifiant GitHub.
 
 ## Étape 1/8 — Avant la séance : vérifier Docker Engine + Docker Compose (10 min)
+
+> [!NOTE]
+> **Windows (VM du cours)**
+> Docker est déjà installé dans la VM par `vagrant up`. Tapez seulement les commandes de
+> vérification ci-dessous (1.1 et 1.2), **dans la VM**.
 
 ### 1.1 Vérifier que Docker est installé
 
@@ -332,6 +354,12 @@ docker info | grep -E 'CPUs|Total Memory'
 > augmentez les valeurs.
 
 ## Étape 2/8 — Avant la séance : installer kubectl, helm, k9s et kind (10 min)
+
+> [!NOTE]
+> **Windows (VM du cours)**
+> Ces quatre outils sont déjà installés dans la VM. Sautez les blocs d'installation et lancez
+> seulement les commandes de vérification (`kubectl version --client`, `helm version`,
+> `k9s version`, `kind version`), **dans la VM**.
 
 Quatre outils en ligne de commande indispensables :
 
@@ -1188,6 +1216,10 @@ Ruff). Il remplace `pip` + `virtualenv` + `pip-tools` + `pyenv`. Pourquoi le cho
 10 à 100x plus rapide que pip, lockfile reproductible, gestion des versions Python intégrée.
 
 ### 6.1 Installer uv
+
+> [!NOTE]
+> **Windows (VM du cours)**
+> uv est déjà installé dans la VM ; vérifiez seulement avec `uv --version`, puis passez à 6.2.
 
 ```bash
 # Linux / macOS / WSL2
