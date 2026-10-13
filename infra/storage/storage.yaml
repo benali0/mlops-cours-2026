@@ -78,6 +78,7 @@ spec:
       labels:
         app: seaweedfs
     spec:
+      enableServiceLinks: false   # sinon K8s injecte S3_PORT=tcp://... et SeaweedFS plante (s3.port)
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

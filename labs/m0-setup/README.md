@@ -876,6 +876,7 @@ spec:
       labels:
         app: seaweedfs
     spec:
+      enableServiceLinks: false   # sinon K8s injecte S3_PORT=tcp://... et SeaweedFS plante (s3.port)
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -1562,6 +1563,10 @@ repo du cours.
 | WSL2 : Docker très lent / fichiers introuvables | Code dans `/mnt/c/` au lieu de `/home/`. | Cloner et travailler dans le système de fichiers Linux WSL. |
 | VM Vagrant : `http://localhost:5000` ne répond pas sous Windows | `make pf` pas lancé dans la VM, ou port déplacé par Vagrant. | Dans la VM : `make pf` ; sous Windows : `vagrant port` ; voir `infra/vagrant/README.md`. |
 | VM Vagrant : `docker: permission denied` ou `uv: command not found` | Session SSH ouverte pendant le provisioning. | `exit` puis `vagrant ssh`. |
+| `vagrant up` : `timeout during server version negotiating` (SSH) | La VM démarre encore, ou le PC est surchargé (autres applications, Hyper-V/WSL2 actifs). | Attendre 1 minute, fermer les applications lourdes, puis `vagrant halt` et `vagrant up --provision`. Si le message revient : `vagrant provision`. |
+| `vagrant up` ou `make prefetch` : `no space left on device` | Le disque du poste est plein (la VM et les images demandent plusieurs dizaines de Go). | Libérer de la place, puis `vagrant destroy -f` et `vagrant up` ; VirtualBox peut aussi stocker les VM sur un autre disque (Fichier > Préférences > Dossier par défaut des machines). |
+| `make preload` : `ctr: content digest ... not found` | Import d'une image dans un nœud kind impossible. Sans gravité. | Rien à faire : le cluster télécharge lui-même l'image. |
+| `kubectl get nodes` : un nœud `NotReady` | Nœud kind (conteneur Docker) bloqué, souvent faute de mémoire. | `docker restart mlops-lab-worker2` (ou le nœud concerné), attendre 1 minute, puis `kubectl get nodes`. |
 
 > [!NOTE]
 > **Note historique : `ImagePullBackOff` sur `minio/minio`**
