@@ -2014,7 +2014,7 @@ Ce lab est la première brique du projet du binôme (guide du mini-projet,
 - **Fiche du dataset** (`docs/dataset-card.md`) : relue pour German Credit, remplie si votre
   binôme a fait valider un dataset libre.
 - **Organisation** : option A ou B déclarée en tête du `README.md` du repo.
-- **Jalon J0, fin de la séance 3** : `make check-m0` et `make check-m1` verts, données versionnées,
+- **Jalon J0, à la fin de la séance du Module 2** : `make check-m0` et `make check-m1` verts, données versionnées,
   runs dans MLflow, tag `j0`. Pré-contrôle (non noté) : `make check-m10 JALON=j0`.
 
 ## Rendu
