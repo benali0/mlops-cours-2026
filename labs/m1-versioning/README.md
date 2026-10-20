@@ -33,6 +33,50 @@ Feast.*
 > - Un feature store **Feast** local : mêmes features pour l'entraînement (hors ligne) et le
 >   serving (en ligne).
 
+## Les notions du lab en 10 minutes (à lire avant de commencer)
+
+Ce lab introduit quatre outils. Cette section les présente avec un schéma chacun ; revenez-y
+pendant le lab dès qu'un mot vous échappe.
+
+![Le Lab 1 en un coup d'œil](img/00-lab1-flux.png)
+
+**DVC** versionne les données comme Git versionne le code, mais sans mettre les données dans Git.
+DVC calcule une **empreinte** (un hash md5) du fichier : deux fichiers identiques ont la même
+empreinte, un seul octet modifié en donne une autre. Git ne garde que cette empreinte (dans
+`dvc.lock`) ; le contenu part sur le stockage S3 du cours avec `dvc push`. Avec un commit Git et
+`dvc pull`, on retrouve exactement les données de ce commit.
+
+![DVC : Git garde l'empreinte, S3 garde le contenu](img/01-dvc-empreinte.png)
+
+**MLflow** enregistre chaque entraînement (un **run**) avec ses paramètres, ses métriques et le
+modèle produit, regroupés dans une **expérience** (`scoring`). Les meilleurs modèles entrent dans
+le **Model Registry**, où des **alias** désignent la version à servir (`@champion`) et le dernier
+candidat évalué (`@challenger`).
+
+![MLflow : des runs au modèle servi](img/02-mlflow-registry.png)
+
+Le **pipeline DVC** (`dvc.yaml`) enchaîne les scripts du projet. Chaque étape (une *stage*)
+déclare ce qu'elle lit et ce qu'elle produit : `dvc repro` ne relance que ce qui a changé.
+
+![Le pipeline DVC](img/03-pipeline-dvc.png)
+
+**Feast** est un *feature store* : les features sont définies une seule fois, puis servies de
+deux façons, en lot pour l'entraînement et ligne par ligne pour la prédiction.
+
+![Feast : une définition, deux accès](img/04-feast.png)
+
+| Mot | En une phrase |
+|---|---|
+| Empreinte (hash md5) | Une signature calculée à partir du contenu d'un fichier ; elle change dès qu'un octet change. |
+| Remote DVC | Le stockage partagé des données versionnées : ici `s3://dvc-store/scoring` sur SeaweedFS. |
+| Stage | Une étape du pipeline DVC : une commande, ses entrées (`deps`, `params`) et ses sorties (`outs`, `metrics`). |
+| Run | Une exécution d'un script d'entraînement, tracée dans MLflow. |
+| Expérience | Un dossier de runs sur un même problème (`scoring`). |
+| Model Registry | Le catalogue des modèles retenus, avec leurs versions. |
+| Alias | Une étiquette qui pointe sur une version : `@champion`, `@challenger`. |
+| Seuil de décision | La probabilité à partir de laquelle on refuse le crédit, calculée à partir des coûts (étape 4.4). |
+| Feature store | Le catalogue des features, servi à l'identique à l'entraînement et en production. |
+
 ## Architecture cible
 
 Au terme du lab, votre stack ressemblera à ceci :
@@ -74,7 +118,15 @@ Au terme du lab, votre stack ressemblera à ceci :
 > `~/mlops-cours-2026`, environnement Python 3.12 synchronisé avec `uv sync`. Vérification
 > rapide : `make check-m0` doit être entièrement vert.
 
-Au début de chaque séance :
+Au début de chaque séance, sous Windows, démarrez d'abord la VM du cours dans **PowerShell**,
+depuis le dossier `infra\vagrant` (celui du Lab 0) :
+
+```powershell
+vagrant up
+vagrant ssh
+```
+
+Puis, dans la VM (ou directement dans votre terminal sous Linux / macOS) :
 
 ```bash
 cd ~/mlops-cours-2026
@@ -83,6 +135,22 @@ make pf                    # port-forwards S3 :8333 et MLflow :5000
 source .venv/bin/activate  # venv du cours
 set -a && source .env && set +a
 ```
+
+> [!TIP]
+> **Si `kubectl get nodes` échoue ou affiche un nœud `NotReady`**
+> Les nœuds du cluster kind sont des conteneurs Docker. Listez-les avec
+> `docker ps -a --filter name=mlops-lab`. S'ils sont arrêtés (`Exited`) :
+> `docker start mlops-lab-control-plane mlops-lab-worker mlops-lab-worker2 kind-registry`. Si un
+> seul nœud est `NotReady` : `docker restart mlops-lab-worker2` (le nœud concerné). Attendez une
+> minute, puis `kubectl get nodes`. Vos données (S3, MLflow) sont conservées tant que vous ne
+> lancez pas `make down`.
+
+> [!IMPORTANT]
+> **Copie du repo créée avant le 13 octobre ?**
+> Deux correctifs ont été publiés dans le repo du cours (`make pf` qui s'arrêtait sur
+> « Terminated », pod SeaweedFS en `CrashLoopBackOff`). Récupérez-les une fois :
+> `git fetch upstream && git checkout upstream/main -- Makefile labs infra`, puis
+> `git commit -m "Mise à jour du cours"`, puis `make storage` et `make mlflow`.
 
 Dans un **nouveau terminal** de la même séance, seules les deux dernières lignes sont
 nécessaires (après `cd ~/mlops-cours-2026`) : les port-forwards tournent déjà en arrière-plan.
@@ -1923,6 +1991,21 @@ dernière section).
 | Propreté du code | Code modulaire (`prepare.py`, `train.py`, `promote.py`, `evaluate.py`). PEP 8 (`make lint`). Aucun nom de colonne ni chemin en dur hors `dataset.yaml` / `params.yaml`. | 4 |
 | **Total** | | **20** |
 
+## Lien avec le mini-projet
+
+Ce lab est la première brique du projet du binôme (guide du mini-projet,
+`labs/m10-capstone/README.md`). En plus de la pull request du lab :
+
+- **Journal de bord** (`docs/journal.md`) : 3 à 5 lignes pour cette séance (qui a piloté, ce qui a
+  bloqué, ce qui reste à faire).
+- **Premier ADR, conseillé** (`docs/adr/0001-…md`, sur le modèle `docs/adr/0000-modele.md`) :
+  pourquoi la ROC AUC pour choisir les modèles et le coût 5 / 1 pour fixer le seuil de décision.
+- **Fiche du dataset** (`docs/dataset-card.md`) : relue pour German Credit, remplie si votre
+  binôme a fait valider un dataset libre.
+- **Organisation** : option A ou B déclarée en tête du `README.md` du repo.
+- **Jalon J0, fin de la séance 3** : `make check-m0` et `make check-m1` verts, données versionnées,
+  runs dans MLflow, tag `j0`. Pré-contrôle (non noté) : `make check-m10 JALON=j0`.
+
 ## Rendu
 
 - **Format** : votre fork `VOTRE_USER/mlops-cours-2026` sur GitHub (public, ou partagé avec
@@ -1940,6 +2023,9 @@ dernière section).
 
 | Symptôme | Cause probable | Solution |
 |---|---|---|
+| `make pf` : `make: *** [Makefile:…: pf] Terminated` | Copie du repo antérieure au correctif du Makefile. | `git fetch upstream && git checkout upstream/main -- Makefile labs infra`, commit, puis `make pf`. |
+| Pod `seaweedfs` en `CrashLoopBackOff`, journal : `invalid value "tcp://…" for environment variable s3.port` | Manifest antérieur au correctif (`enableServiceLinks: false`). | Même mise à jour depuis `upstream/main`, puis `make storage` et `make mlflow`. |
+| `kubectl get nodes` : `connection refused` après un redémarrage de la VM | Conteneurs des nœuds kind arrêtés. | `docker start mlops-lab-control-plane mlops-lab-worker mlops-lab-worker2 kind-registry`, attendre 1 min. |
 | `dvc push` : `NoSuchBucket` | Bucket `dvc-store` absent (Job `create-buckets` du Lab 0 non terminé). | `make storage` (idempotent), puis `aws-lab s3 ls`. |
 | `dvc push` : `Could not connect to the endpoint URL: "http://localhost:8333/…"` | Port-forward S3 arrêté. | `make pf`. |
 | `dvc push` : `Unable to locate credentials` | Identifiants non configurés (clone frais, autre poste). | `dvc remote modify --local storage access_key_id mlops` (et `secret_access_key`). |
