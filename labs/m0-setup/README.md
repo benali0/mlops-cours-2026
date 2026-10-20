@@ -570,6 +570,11 @@ AWS_ACCESS_KEY_ID=mlops
 AWS_SECRET_ACCESS_KEY=mlops-lab-secret
 AWS_DEFAULT_REGION=us-east-1
 
+# MLflow 3 : téléchargements et envois toujours via le serveur MLflow. Sinon le client reçoit
+# des URL directes vers s3.storage:8333, adresse interne au cluster, injoignable depuis le poste.
+MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD=false
+MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD=false
+
 # Pas de télémétrie vers des services tiers (MLflow, Evidently…) depuis les postes
 MLFLOW_DISABLE_TELEMETRY=true
 DO_NOT_TRACK=true

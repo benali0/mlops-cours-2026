@@ -152,6 +152,17 @@ set -a && source .env && set +a
 > `git fetch upstream && git checkout upstream/main -- Makefile labs infra`, puis
 > `git commit -m "Mise à jour du cours"`, puis `make storage` et `make mlflow`.
 
+> [!IMPORTANT]
+> **Une fois, avant l'étape 4 : deux lignes à ajouter à votre `.env`**
+> Sans elles, MLflow 3 essaie de télécharger les modèles directement depuis une adresse interne
+> au cluster (`s3.storage:8333`) et reste bloqué sur `Retrying 1 failed chunk(s)`.
+>
+> ```bash
+> grep -q MULTIPART_DOWNLOAD .env || printf '%s\n' \
+>   MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD=false MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD=false >> .env
+> set -a && source .env && set +a
+> ```
+
 Dans un **nouveau terminal** de la même séance, seules les deux dernières lignes sont
 nécessaires (après `cd ~/mlops-cours-2026`) : les port-forwards tournent déjà en arrière-plan.
 
@@ -2026,6 +2037,7 @@ Ce lab est la première brique du projet du binôme (guide du mini-projet,
 | `make pf` : `make: *** [Makefile:…: pf] Terminated` | Copie du repo antérieure au correctif du Makefile. | `git fetch upstream && git checkout upstream/main -- Makefile labs infra`, commit, puis `make pf`. |
 | Pod `seaweedfs` en `CrashLoopBackOff`, journal : `invalid value "tcp://…" for environment variable s3.port` | Manifest antérieur au correctif (`enableServiceLinks: false`). | Même mise à jour depuis `upstream/main`, puis `make storage` et `make mlflow`. |
 | `kubectl get nodes` : `connection refused` après un redémarrage de la VM | Conteneurs des nœuds kind arrêtés. | `docker start mlops-lab-control-plane mlops-lab-worker mlops-lab-worker2 kind-registry`, attendre 1 min. |
+| MLflow : `Retrying 1 failed chunk(s) for model.skops` (bloqué de longues minutes) | MLflow 3 tente un téléchargement direct depuis `s3.storage:8333`, adresse interne au cluster. | Ajouter à `.env` `MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD=false` et `MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD=false` (encadré du début du lab), puis `set -a && source .env && set +a`. |
 | `dvc push` : `NoSuchBucket` | Bucket `dvc-store` absent (Job `create-buckets` du Lab 0 non terminé). | `make storage` (idempotent), puis `aws-lab s3 ls`. |
 | `dvc push` : `Could not connect to the endpoint URL: "http://localhost:8333/…"` | Port-forward S3 arrêté. | `make pf`. |
 | `dvc push` : `Unable to locate credentials` | Identifiants non configurés (clone frais, autre poste). | `dvc remote modify --local storage access_key_id mlops` (et `secret_access_key`). |
