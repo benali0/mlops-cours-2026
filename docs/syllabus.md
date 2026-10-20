@@ -71,9 +71,9 @@ le code, les manifests, les tests ou les vérifications. Changer de jeu de donn�
 réécrire `dataset.yaml` et `src/download.py`, rien d'autre.
 
 > [!IMPORTANT]
-> **Dataset libre : validé avant le Lab 1**
+> **Dataset libre : validé au plus tard au jalon J0**
 > Un binôme peut remplacer le credit scoring par son propre jeu de données, à condition qu'il
-> soit validé par l'enseignant **avant la séance du Lab 1 (S2)**. Conditions : tabulaire et
+> soit validé par l'enseignant **au plus tard au jalon J0, à la fin de la séance du Module 2 (S3)**. Conditions : tabulaire et
 > classification supervisée (binaire de préférence), 1 000 à 100 000 lignes, moins de 50 Mo,
 > licence ouverte, téléchargeable par un script (`src/download.py`), au moins un attribut
 > sensible, aucune donnée identifiante. La proposition se fait par une issue sur le repo du
@@ -148,7 +148,7 @@ modules et les compétences visées sont conservés ; le volume horaire est rame
 | Domaine | Version 1.0 | Version 2.0 | Pourquoi |
 |---|---|---|---|
 | Organisation | Un dossier par lab, code annoncé mais non fourni, cluster recréé selon les labs | Un repo de cours modèle dans lequel le binôme travaille du Lab 0 à la soutenance ; infra par `make` ; `make check-mX` en fin de lab ; corrections publiées (branche `solution/mX`, tag `start/m(X+1)`) | Reproductibilité, rattrapage possible, notation outillée |
-| Cas d'usage | Titanic | Credit scoring (German Credit) piloté par `dataset.yaml`, dataset libre validé avant le Lab 1, seuil de décision coût-optimal | Cas réel à coûts asymétriques et à haut risque : donne un objet aux labs d'équité, de monitoring par groupe et de gouvernance |
+| Cas d'usage | Titanic | Credit scoring (German Credit) piloté par `dataset.yaml`, dataset libre validé au plus tard au jalon J0, seuil de décision coût-optimal | Cas réel à coûts asymétriques et à haut risque : donne un objet aux labs d'équité, de monitoring par groupe et de gouvernance |
 | Stockage S3 | MinIO | SeaweedFS (Apache 2.0, même API S3) | MinIO communautaire archivé, images retirées de Docker Hub en septembre 2026 ; SeaweedFS est le stockage par défaut de KFP depuis 2.15 |
 | Tracking | Serveur MLflow lancé sur le poste, stages Staging / Production | Un seul serveur MLflow dans le cluster, proxy d'artefacts, alias `@champion` / `@challenger`, sérialisation skops | Stages dépréciés depuis MLflow 2.9 ; plus d'identifiants S3 côté clients |
 | Tests de modèles | Deepchecks | Evidently + tests comportementaux en pytest | Deepchecks 0.19 est incompatible avec scikit-learn ≥ 1.8 et NumPy 2 |
@@ -726,7 +726,7 @@ fait pas partie du socle du mini-projet : il sert de base à l'extension `rag-pr
 | Plan du cours magistral | Plan du lab guidé |
 |---|---|
 | Pas de cours magistral — suivi du projet à chaque séance | Socle = Labs 0 à 8 appliqués au cas d'usage, vérifiés par `make check-m0` … `make check-m8` |
-| Dataset libre validé avant le Lab 1 (S2), sinon credit scoring | Une extension par étudiant : catalogue de 16, niveaux ★ à ★★★, ou hors catalogue validée avant la fin de S5 |
+| Dataset libre validé au plus tard au jalon J0 (fin S3), sinon credit scoring | Une extension par étudiant : catalogue de 16, niveaux ★ à ★★★, ou hors catalogue validée avant la fin de S5 |
 | Jalons taggés : J0 Setup (fin S3), extensions déclarées (fin S5), J1 MVP (fin S7), J2 Production (fin S8), `final` 48 h avant la soutenance (S9) | Travail par branches `lab/…` et `ext/<nom>`, fusionnées par PR relue par le partenaire |
 | Préparation du défi : « jeu du chaos » hebdomadaire en binôme à partir de J1 | Soutenance de 25 min par binôme, devant le poster : poster et démo du projet déployé 5 min, extensions 2 × 5 min, défi en direct 2 × 4 min, questions 2 min |
 | | Défi tiré au sort parmi six familles d'incidents : données invalides, drift, service qui ne répond plus, déploiement bloqué, modèle dégradé, secret manquant |
@@ -849,7 +849,7 @@ autonomie avant la séance suivante.*
 | Séance | Contenu (2 h) | Mini-projet |
 |---|---|---|
 | S1 | Module 0 : cours 50 min + Lab 0 (setup) 1 h 10 | Binômes formés, repo du binôme créé ; postes à moins de 16 Go repérés, solution de repli décidée |
-| S2 | Module 1 : cours 45 min + Lab 1 (versioning, DVC, MLflow) 1 h 15 | Dataset libre validé **avant** la séance, sinon credit scoring |
+| S2 | Module 1 : cours 45 min + Lab 1 (versioning, DVC, MLflow) 1 h 15 | Dataset libre : proposition possible jusqu'au jalon J0 (fin S3), sinon credit scoring |
 | S3 | Module 2 : cours 45 min + Lab 2 (pipelines Kubeflow) 1 h 15 | **J0 Setup** : tag `j0` en fin de semaine |
 | S4 | Module 3 : cours 45 min + Lab 3 (validation) 1 h 15 | — |
 | S5 | Module 4 : cours 45 min + Lab 4 (packaging) 1 h 15 | Extensions déclarées (date limite : fin de semaine) ; compte cloud ouvert |

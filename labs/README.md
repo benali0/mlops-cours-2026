@@ -2,7 +2,7 @@
 
 Chaque lab ajoute une brique au **même repo** : le vôtre. À la fin du Lab 8, ce repo est le
 **socle** de votre mini-projet. Le cas d'usage par défaut est le credit scoring
-(`dataset.yaml`) ; un binôme peut le remplacer par son propre dataset, validé avant le Lab 1.
+(`dataset.yaml`) ; un binôme peut le remplacer par son propre dataset, validé au plus tard au jalon J0 (fin de la séance du Module 2).
 
 | Lab | Énoncé | Durée de l'énoncé | Ce que le lab ajoute au repo | Vérification |
 |---|---|---|---|---|

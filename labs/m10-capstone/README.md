@@ -44,7 +44,7 @@ personnelle**, puis la défend en soutenance, y compris face à un **incident pr
 | Élément | En bref |
 |---|---|
 | Équipe | Binôme : **option A**, un repo commun, ou **option B**, deux repos coordonnés (un par étudiant) ; chacun son cluster kind |
-| Cas d'usage | Credit scoring (Statlog German Credit) par défaut, ou dataset libre validé avant le Lab 1 ; le même pour les deux membres |
+| Cas d'usage | Credit scoring (Statlog German Credit) par défaut, ou dataset libre validé au plus tard au jalon J0 (fin de la séance du Module 2) ; le même pour les deux membres |
 | Socle | Les Labs 0 à 8 appliqués à votre cas d'usage, vérifiés par `make check-m0` … `make check-m8` |
 | Déploiement cloud | L'API de scoring en ligne, en HTTPS, chez un fournisseur cloud (Azure, Google Cloud, AWS ou autre). Non enseigné en séance : travail autonome |
 | Extension (individuelle) | Une par étudiant, choisie dans un catalogue de 16 (ou hors catalogue validée), niveau ★ à ★★★ |
@@ -84,7 +84,7 @@ exigences, pas des options.
 ### Choisir son propre dataset
 
 Vous pouvez remplacer le credit scoring par votre propre jeu de données, **à condition qu'il
-soit validé avant la séance du Lab 1 (S2)**. Conditions, toutes obligatoires :
+soit validé au plus tard au jalon J0, à la fin de la séance du Module 2 (S3)**. Conditions, toutes obligatoires :
 
 | Condition | Pourquoi |
 |---|---|
@@ -104,7 +104,7 @@ demande le **lien, la licence, la taille, la cible, les attributs sensibles et l
 5 lignes** (qui utiliserait le modèle, pour quelle décision, ce que coûte chaque type d'erreur).
 L'enseignant répond par le label `validé` ou `refusé`. Une fois validé, adaptez `dataset.yaml`
 (mêmes clés, nouvelles valeurs) et `src/download.py`, puis lancez `uv run pytest
-tests/test_dataset_config.py`.
+tests/test_dataset_config.py` et rejouez le Lab 1 sur ce dataset (étapes 1, 2, puis 4 à 8).
 
 **Retour au credit scoring possible à tout moment** : si votre dataset vous pose trop de
 problèmes, revenez au fil rouge sans pénalité (restaurez `dataset.yaml` et `src/download.py`
@@ -269,7 +269,7 @@ git push -u origin lab/m0-journal
 
 | Séances | Phase | Labs | Ce que fait le binôme | Jalon |
 |---|---|---|---|---|
-| S1-S3 | Fondations | M0, M1, M2 | Organisation choisie (option A ou B), repo(s), clusters, choix du dataset (validé **avant S2**), `dataset.yaml`, DVC, MLflow, pipeline orchestré | **J0 Setup** fin S3, tag `j0` |
+| S1-S3 | Fondations | M0, M1, M2 | Organisation choisie (option A ou B), repo(s), clusters, choix du dataset (validé **au plus tard à J0**), `dataset.yaml`, DVC, MLflow, pipeline orchestré | **J0 Setup** fin S3, tag `j0` |
 | S4-S5 | Qualité et packaging | M3, M4 | Gates de validation, image de service ; **chaque membre déclare son extension** (fin S5) ; compte cloud ouvert | — |
 | S6-S7 | Mise en service et automatisation | M5, M6 | Modèle servi par KServe, CI/CD/CT ; extensions en développement | **J1 MVP** fin S7, tag `j1` |
 | S8 | Industrialisation | M7, M8 (M9 optionnel, hors socle) | Monitoring, gouvernance ; extensions fusionnées ; déploiement cloud en cours | **J2 Production** fin S8, tag `j2` |
